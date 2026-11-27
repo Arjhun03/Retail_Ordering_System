@@ -1,0 +1,42 @@
+# Build output
+**/bin/
+**/obj/
+artifacts/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+
+# IDE and editor state
+.idea/
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.swp
+*.swo
+*~
+
+# Rider / ReSharper caches
+_ReSharper.Caches/
+*.DotSettings.user
+riderModule.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and test results
+*.log
+TestResults/
+coverage/
+coverage.*
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+secrets.json
