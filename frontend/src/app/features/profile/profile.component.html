@@ -1,0 +1,93 @@
+<main class="auth-shell">
+  <section class="auth-card" aria-labelledby="profile-heading">
+    <div class="profile-header">
+      <div>
+        <p class="brand-eyebrow">Fresh Market</p>
+        <h1 id="profile-heading" class="card-title">Your profile</h1>
+      </div>
+      <button type="button" class="btn btn-secondary logout-btn" (click)="onLogout()">
+        Logout
+      </button>
+    </div>
+
+    @if (isLoading()) {
+      <p class="card-subtitle" role="status" aria-live="polite">Loading your profile...</p>
+    } @else if (loadError(); as errorText) {
+      <div class="banner banner-error" role="alert" aria-live="polite">
+        <span>{{ errorText }}</span>
+      </div>
+      <button type="button" class="btn btn-primary" (click)="fetchProfile()">Try again</button>
+    } @else if (profile(); as user) {
+      <dl class="readonly-meta">
+        <div class="meta-row">
+          <dt>Email</dt>
+          <dd>{{ user.email }}</dd>
+        </div>
+        <div class="meta-row">
+          <dt>Role</dt>
+          <dd><span class="role-badge">{{ user.role }}</span></dd>
+        </div>
+      </dl>
+
+      @if (saveSuccess()) {
+        <div class="banner banner-success" role="status" aria-live="polite">
+          <span>Saved</span>
+        </div>
+      }
+
+      @if (saveError(); as saveErr) {
+        <div class="banner banner-error" role="alert" aria-live="polite">
+          <span>{{ saveErr }}</span>
+        </div>
+      }
+
+      <form class="form-stack" [formGroup]="form" (ngSubmit)="onSave()" novalidate>
+        <div class="field">
+          <label class="field-label" for="profile-full-name">Full name</label>
+          <input
+            id="profile-full-name"
+            type="text"
+            class="field-input"
+            formControlName="fullName"
+            autocomplete="name"
+            [attr.aria-invalid]="shouldShowError('fullName')"
+            [attr.aria-describedby]="shouldShowError('fullName') ? 'profile-full-name-error' : null"
+          />
+          @if (getFieldError('fullName'); as fullNameError) {
+            <p id="profile-full-name-error" class="field-error" aria-live="polite">
+              {{ fullNameError }}
+            </p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="profile-phone">
+            Phone <span class="optional-tag">(optional)</span>
+          </label>
+          <input
+            id="profile-phone"
+            type="tel"
+            class="field-input"
+            formControlName="phone"
+            autocomplete="tel"
+            inputmode="tel"
+            [attr.aria-invalid]="shouldShowError('phone')"
+            [attr.aria-describedby]="shouldShowError('phone') ? 'profile-phone-error' : null"
+          />
+          @if (getFieldError('phone'); as phoneError) {
+            <p id="profile-phone-error" class="field-error" aria-live="polite">{{ phoneError }}</p>
+          }
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="isSaving()">
+          @if (isSaving()) {
+            <span class="spinner" aria-hidden="true"></span>
+            <span>Saving...</span>
+          } @else {
+            <span>Save changes</span>
+          }
+        </button>
+      </form>
+    }
+  </section>
+</main>
