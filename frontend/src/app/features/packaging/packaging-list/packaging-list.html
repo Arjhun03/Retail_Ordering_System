@@ -1,0 +1,74 @@
+<section class="packaging-section">
+  <h2>Available Packaging</h2>
+
+  <p *ngIf="loading" class="loading">
+    Loading packaging options...
+  </p>
+
+  <p *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </p>
+
+  <p *ngIf="successMessage" class="success">
+    {{ successMessage }}
+  </p>
+
+  <div
+    class="packaging-grid"
+    *ngIf="!loading && !errorMessage"
+  >
+    <div
+      class="packaging-card"
+      *ngFor="let packaging of packagingOptions"
+    >
+      <h3>{{ packaging.packagingName }}</h3>
+
+      <p class="product-name">
+        {{ packaging.productName }}
+      </p>
+
+      <p class="unit">
+        Unit: {{ packaging.unit }}
+      </p>
+
+      <p class="price">
+        ₹{{ packaging.price | number:'1.2-2' }}
+      </p>
+
+      <p
+        class="stock"
+        *ngIf="packaging.availableQuantity !== null"
+      >
+        Available: {{ packaging.availableQuantity }}
+      </p>
+
+      <p class="stock" *ngIf="packaging.availableQuantity === null">
+        Stock information unavailable
+      </p>
+
+      <button
+        type="button"
+        [disabled]="
+          !packaging.isActive ||
+          addingPackagingId === packaging.packagingId
+        "
+        (click)="addToCart(packaging)"
+      >
+        {{
+          addingPackagingId === packaging.packagingId
+            ? 'Adding...'
+            : packaging.isActive
+              ? 'Add to Cart'
+              : 'Unavailable'
+        }}
+      </button>
+    </div>
+  </div>
+
+  <p
+    class="empty-message"
+    *ngIf="!loading && !errorMessage && packagingOptions.length === 0"
+  >
+    No packaging options available.
+  </p>
+</section>
