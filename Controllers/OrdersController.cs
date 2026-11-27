@@ -36,7 +36,7 @@ public class OrdersController : ControllerBase
     // POST: api/orders
     // Customer checkout
     [HttpPost]
-    [Authorize(Roles = "Customer")]
+    [Authorize(Roles = "Customer,Admin")]
     public async Task<IActionResult> PlaceOrder(
         [FromBody] PlaceOrderRequest request,
         CancellationToken ct)

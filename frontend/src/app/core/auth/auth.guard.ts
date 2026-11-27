@@ -24,7 +24,7 @@ export const guestGuard: CanActivateFn = () => {
     return true;
   }
 
-  return router.createUrlTree(['/profile']);
+  return router.createUrlTree(['/products']);
 };
 
 export function roleGuard(allowedRoles: UserRole | readonly UserRole[]): CanActivateFn {

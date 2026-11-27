@@ -1,0 +1,74 @@
+.inventory-page {
+  padding-top: 12px;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.inventory-table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.inventory-table th {
+  text-align: left;
+  padding: 14px 18px;
+  background: var(--subtle);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.inventory-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.inventory-table tr:last-child td {
+  border-bottom: none;
+}
+
+.low-stock-row {
+  background-color: #fffaf0;
+}
+
+.packaging-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--subtle);
+  border: 1px solid var(--border);
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.inline-input {
+  width: 100px;
+  height: 36px;
+  padding: 0 10px;
+}
+
+.save-stock-btn {
+  height: 36px;
+}

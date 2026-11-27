@@ -1,0 +1,101 @@
+<div class="container orders-page">
+  <div class="orders-header">
+    <p class="brand-eyebrow">Your Activity</p>
+    <h1 class="page-title">Order History</h1>
+    <p class="page-subtitle">Track your placed orders, delivery status, and historical totals.</p>
+  </div>
+
+  @if (errorMessage(); as err) {
+    <div class="banner banner-error" role="alert">
+      <span>{{ err }}</span>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-box">
+      <p>Loading your orders...</p>
+    </div>
+  } @else if (orders().length === 0) {
+    <div class="empty-orders card">
+      <div class="empty-icon">📦</div>
+      <h2>No orders placed yet</h2>
+      <p>Once you checkout your first order, it will show up here.</p>
+      <a routerLink="/products" class="btn btn-primary">
+        Start Shopping
+      </a>
+    </div>
+  } @else {
+    <div class="orders-list">
+      @for (order of orders(); track order.orderId) {
+        <article class="card order-card">
+          <div class="order-summary-row" (click)="toggleOrderDetails(order.orderId)">
+            <div class="order-main-info">
+              <span class="order-number">Order #{{ order.orderNumber }}</span>
+              <span class="order-date">{{ order.orderedAtUtc | date:'medium' }}</span>
+            </div>
+
+            <div class="order-status-box">
+              <span
+                class="badge"
+                [class.badge-ok]="order.status === 'Delivered' || order.status === 'Confirmed'"
+                [class.badge-accent]="order.status === 'Pending' || order.status === 'Shipped'"
+                [class.badge-danger]="order.status === 'Cancelled'"
+              >
+                {{ order.status }}
+              </span>
+            </div>
+
+            <div class="order-price-toggle">
+              <span class="order-total">${{ order.totalAmount.toFixed(2) }}</span>
+              <button
+                type="button"
+                class="toggle-details-btn"
+                [attr.aria-expanded]="expandedOrderId() === order.orderId"
+              >
+                {{ expandedOrderId() === order.orderId ? 'Hide Details ▲' : 'View Details ▼' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Expanded Order Details -->
+          @if (expandedOrderId() === order.orderId) {
+            <div class="order-expanded-details">
+              @if (isLoadingDetail()) {
+                <p class="loading-text">Loading items...</p>
+              } @else if (selectedOrderDetail(); as detail) {
+                <div class="detail-block">
+                  <p class="address-line">
+                    <strong>Delivery Address:</strong> {{ detail.deliveryAddress }}
+                  </p>
+
+                  <table class="detail-items-table">
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Packaging</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (item of detail.items; track item.orderItemId) {
+                        <tr>
+                          <td><strong>{{ item.productName }}</strong></td>
+                          <td>{{ item.packagingName }}</td>
+                          <td>{{ item.quantity }}</td>
+                          <td>${{ item.unitPrice.toFixed(2) }}</td>
+                          <td><strong>${{ item.subtotal.toFixed(2) }}</strong></td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</div>

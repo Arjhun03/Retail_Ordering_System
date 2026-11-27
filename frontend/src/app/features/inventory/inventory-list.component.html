@@ -1,0 +1,100 @@
+<div class="container inventory-page">
+  <div class="inventory-header">
+    <div>
+      <p class="brand-eyebrow">Admin Console</p>
+      <h1 class="page-title">Inventory Management</h1>
+      <p class="page-subtitle">Monitor and restock item availability across all food and drink packaging sizes.</p>
+    </div>
+    <button type="button" class="btn btn-secondary btn-sm" (click)="loadInventory()">
+      ↻ Refresh Stock
+    </button>
+  </div>
+
+  @if (successMessage(); as okMsg) {
+    <div class="banner banner-success" role="status">
+      <span>{{ okMsg }}</span>
+    </div>
+  }
+
+  @if (errorMessage(); as err) {
+    <div class="banner banner-error" role="alert">
+      <span>{{ err }}</span>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-box">
+      <p>Loading inventory data...</p>
+    </div>
+  } @else {
+    <div class="card inventory-table-card">
+      <div class="table-responsive">
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Packaging / Size</th>
+              <th>Status</th>
+              <th>Current Stock</th>
+              <th>Reorder Alert Level</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of items(); track row.item.packagingId) {
+              <tr [class.low-stock-row]="row.item.isLowStock">
+                <td>
+                  <strong>{{ row.item.productName }}</strong>
+                </td>
+                <td>
+                  <span class="packaging-pill">{{ row.item.packagingName }}</span>
+                </td>
+                <td>
+                  @if (row.item.isLowStock) {
+                    <span class="badge badge-danger">Low Stock</span>
+                  } @else {
+                    <span class="badge badge-ok">Optimal</span>
+                  }
+                </td>
+                <td>
+                  <div class="edit-input-group">
+                    <input
+                      type="number"
+                      min="0"
+                      class="field-input inline-input"
+                      [(ngModel)]="row.editStock"
+                    />
+                  </div>
+                </td>
+                <td>
+                  <div class="edit-input-group">
+                    <input
+                      type="number"
+                      min="0"
+                      class="field-input inline-input"
+                      [(ngModel)]="row.editReorder"
+                    />
+                  </div>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm save-stock-btn"
+                    [disabled]="row.isSaving"
+                    (click)="onSaveStock(row)"
+                  >
+                    @if (row.isSaving) {
+                      <span>Saving...</span>
+                    } @else {
+                      <span>Save</span>
+                    }
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

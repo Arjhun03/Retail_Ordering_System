@@ -1,0 +1,135 @@
+<div class="container cart-page">
+  <div class="cart-header">
+    <p class="brand-eyebrow">Shopping Cart</p>
+    <h1 class="page-title">Review Your Items</h1>
+  </div>
+
+  @if (errorMessage(); as err) {
+    <div class="banner banner-error" role="alert">
+      <span>{{ err }}</span>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-box">
+      <p>Loading your cart...</p>
+    </div>
+  } @else if (!cartService.cart() || cartService.cart()!.items.length === 0) {
+    <div class="empty-cart card">
+      <div class="empty-icon">🛒</div>
+      <h2>Your cart is currently empty</h2>
+      <p>Looks like you haven't added any fresh food or drinks yet.</p>
+      <a routerLink="/products" class="btn btn-primary">
+        Browse Delicious Menu
+      </a>
+    </div>
+  } @else {
+    <div class="cart-layout">
+      <!-- Items List -->
+      <section class="cart-items-section card">
+        <div class="section-title-row">
+          <h2 class="section-title">Items in Cart ({{ cartService.itemCount() }})</h2>
+          <button type="button" class="btn-text-clear" (click)="onClearCart()">
+            Clear All
+          </button>
+        </div>
+
+        <ul class="items-list">
+          @for (item of cartService.cart()!.items; track item.cartItemId) {
+            <li class="item-row">
+              <div class="item-details">
+                <h3 class="item-product-name">{{ item.productName }}</h3>
+                <span class="item-packaging-info">
+                  {{ item.packagingName }} • ${{ item.unitPrice.toFixed(2) }} / {{ item.unit }}
+                </span>
+              </div>
+
+              <!-- Quantity selector -->
+              <div class="qty-selector">
+                <button
+                  type="button"
+                  class="qty-btn"
+                  (click)="onUpdateQty(item.packagingId, item.quantity, -1)"
+                >
+                  −
+                </button>
+                <span class="qty-val">{{ item.quantity }}</span>
+                <button
+                  type="button"
+                  class="qty-btn"
+                  (click)="onUpdateQty(item.packagingId, item.quantity, 1)"
+                >
+                  +
+                </button>
+              </div>
+
+              <!-- Subtotal & remove -->
+              <div class="item-actions">
+                <span class="item-subtotal">${{ item.subtotal.toFixed(2) }}</span>
+                <button
+                  type="button"
+                  class="remove-btn"
+                  title="Remove item"
+                  (click)="onRemoveItem(item.packagingId)"
+                >
+                  ✕
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <!-- Checkout Sidebar -->
+      <aside class="checkout-summary-section card">
+        <h2 class="section-title">Order Summary</h2>
+
+        <div class="summary-breakdown">
+          <div class="summary-line">
+            <span>Subtotal</span>
+            <span>${{ cartService.totalAmount().toFixed(2) }}</span>
+          </div>
+          <div class="summary-line">
+            <span>Estimated Delivery</span>
+            <span class="free-tag">FREE</span>
+          </div>
+          <div class="summary-line total-line">
+            <span>Total Amount</span>
+            <span class="total-val">${{ cartService.totalAmount().toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <!-- Delivery Address Input -->
+        <div class="field address-field">
+          <label class="field-label" for="delivery-address">
+            Delivery Address <span class="required-star">*</span>
+          </label>
+          <textarea
+            id="delivery-address"
+            class="field-input"
+            rows="3"
+            placeholder="Street address, apartment/suite, city, zip code..."
+            [(ngModel)]="deliveryAddress"
+          ></textarea>
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-primary checkout-btn"
+          [disabled]="isCheckingOut() || !deliveryAddress().trim()"
+          (click)="onCheckout()"
+        >
+          @if (isCheckingOut()) {
+            <span>Placing Order...</span>
+          } @else {
+            <span>Place Order Now • ${{ cartService.totalAmount().toFixed(2) }}</span>
+          }
+        </button>
+
+        <p class="checkout-note">
+          No online payment gateway needed. Orders are fulfilled directly to your address.
+        </p>
+      </aside>
+    </div>
+  }
+</div>

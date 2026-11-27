@@ -94,7 +94,7 @@ export class LoginComponent implements OnInit {
         const safeTarget =
           returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')
             ? returnUrl
-            : '/profile';
+            : '/products';
         void this.router.navigateByUrl(safeTarget);
       },
       error: (err: unknown) => {

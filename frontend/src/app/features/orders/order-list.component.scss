@@ -1,0 +1,124 @@
+.orders-page {
+  padding-top: 12px;
+}
+
+.orders-header {
+  margin-bottom: 24px;
+}
+
+.empty-orders {
+  text-align: center;
+  padding: 60px 24px;
+  max-width: 480px;
+  margin: 40px auto;
+}
+
+.empty-icon {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-card {
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.order-card:hover {
+  border-color: var(--border-s);
+  box-shadow: 0 6px 16px rgba(31, 27, 22, 0.06);
+}
+
+.order-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.order-main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.order-number {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.order-date {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.order-price-toggle {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.order-total {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.toggle-details-btn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.order-expanded-details {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  cursor: default;
+}
+
+.address-line {
+  margin: 0 0 16px;
+  font-size: 0.875rem;
+  color: var(--text);
+  background: var(--subtle);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.detail-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.detail-items-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 2px solid var(--border);
+}
+
+.detail-items-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-items-table tr:last-child td {
+  border-bottom: none;
+}
