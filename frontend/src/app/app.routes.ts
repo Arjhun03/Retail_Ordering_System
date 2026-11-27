@@ -35,18 +35,18 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 
-  // 4. Cart (Customer & Admin)
+  // 4. Cart (Customer only)
   {
     path: 'cart',
-    canActivate: [authGuard, roleGuard(['Customer', 'Admin'])],
+    canActivate: [authGuard, roleGuard(['Customer'])],
     loadChildren: () =>
       import('./features/cart/cart.routes').then((m) => m.CART_ROUTES),
   },
 
-  // 5. Orders (Customer & Admin)
+  // 5. Orders (Customer only)
   {
     path: 'orders',
-    canActivate: [authGuard, roleGuard(['Customer', 'Admin'])],
+    canActivate: [authGuard, roleGuard(['Customer'])],
     loadChildren: () =>
       import('./features/orders/orders.routes').then((m) => m.ORDER_ROUTES),
   },

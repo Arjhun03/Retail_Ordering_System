@@ -22,8 +22,8 @@
           </a>
         }
 
-        <!-- Cart and Orders: visible to Customers and Admin -->
-        @if (authService.isCustomer() || authService.isAdmin()) {
+        <!-- Cart and Orders: visible to Customers only -->
+        @if (authService.isCustomer()) {
           <a routerLink="/cart" routerLinkActive="active" class="nav-item cart-item">
             Cart
             @if (cartService.itemCount() > 0) {
@@ -38,10 +38,10 @@
 
         <!-- Inventory & Admin: Admin only -->
         @if (authService.isAdmin()) {
-          <a routerLink="/inventory" routerLinkActive="active" class="nav-item admin-tag">
+          <a routerLink="/inventory" routerLinkActive="active" class="nav-item">
             Inventory
           </a>
-          <a routerLink="/admin/brand-managers" routerLinkActive="active" class="nav-item admin-tag">
+          <a routerLink="/admin/brand-managers" routerLinkActive="active" class="nav-item">
             Brand Managers
           </a>
         }
