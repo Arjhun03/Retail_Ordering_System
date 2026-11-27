@@ -182,6 +182,19 @@ public class DbSeeder(
         await context.Inventories.AddRangeAsync(inventories, ct);
         await context.SaveChangesAsync(ct);
 
+        // Ensure all products have valid images
+        var missingImageProducts = await context.Products
+            .Where(p => p.ImageUrl == null || p.ImageUrl == "")
+            .ToListAsync(ct);
+        foreach (var p in missingImageProducts)
+        {
+            p.ImageUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c";
+        }
+        if (missingImageProducts.Count > 0)
+        {
+            await context.SaveChangesAsync(ct);
+        }
+
         logger.LogInformation("Successfully seeded catalog items and inventory records.");
     }
 }

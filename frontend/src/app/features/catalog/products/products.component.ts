@@ -2,13 +2,16 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/auth/auth.service';
+import { CartService } from '../../../core/services/cart.service';
 import { CatalogService } from '../services/catalog.service';
 import {
   BrandResponse,
   CategoryResponse,
   ProductListItemResponse,
+  ProductPackagingSummary,
   CreateProductRequest,
   UpdateProductRequest,
   ProductQuery
@@ -23,7 +26,11 @@ import {
 })
 export class ProductsComponent implements OnInit {
   private readonly catalogService = inject(CatalogService);
+  private readonly cartService = inject(CartService);
+  private readonly router = inject(Router);
   readonly authService = inject(AuthService);
+
+  readonly defaultImage = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80';
 
   products = signal<ProductListItemResponse[]>([]);
   brands = signal<BrandResponse[]>([]);
@@ -34,11 +41,18 @@ export class ProductsComponent implements OnInit {
   errorMessage = signal('');
   successMessage = signal('');
 
+  addingToCartId = signal<number | null>(null);
+  buyingNowId = signal<number | null>(null);
+  selectedPackaging: Record<number, number> = {};
+
   editingId: number | null = null;
 
   productName = '';
   description = '';
   imageUrl = '';
+  price: number | null = null;
+  unit = '1 Unit';
+  packagingName = 'Standard';
   brandId: number | null = null;
   categoryId: number | null = null;
 
@@ -47,7 +61,7 @@ export class ProductsComponent implements OnInit {
   selectedCategoryId: number | null = null;
 
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 12;
   totalPages = 0;
   totalCount = 0;
 
@@ -125,6 +139,11 @@ export class ProductsComponent implements OnInit {
       return;
     }
 
+    if (!this.imageUrl.trim()) {
+      this.errorMessage.set('Product image URL is required.');
+      return;
+    }
+
     this.saving.set(true);
     this.errorMessage.set('');
     this.successMessage.set('');
@@ -135,7 +154,7 @@ export class ProductsComponent implements OnInit {
           categoryId: this.categoryId,
           productName: name,
           description: this.description.trim() || null,
-          imageUrl: this.imageUrl.trim() || null,
+          imageUrl: this.imageUrl.trim(),
           isActive: true
         }).subscribe({
           next: () => {
@@ -151,7 +170,10 @@ export class ProductsComponent implements OnInit {
           categoryId: this.categoryId,
           productName: name,
           description: this.description.trim() || null,
-          imageUrl: this.imageUrl.trim() || null
+          imageUrl: this.imageUrl.trim(),
+          price: this.price,
+          unit: this.unit.trim() || null,
+          packagingName: this.packagingName.trim() || null
         }).subscribe({
           next: () => {
             this.successMessage.set('Product added to your brand successfully.');
@@ -176,7 +198,7 @@ export class ProductsComponent implements OnInit {
       brandId: this.brandId,
       categoryId: this.categoryId,
       description: this.description.trim() || null,
-      imageUrl: this.imageUrl.trim() || null
+      imageUrl: this.imageUrl.trim()
     };
 
     if (this.editingId !== null) {
@@ -242,8 +264,67 @@ export class ProductsComponent implements OnInit {
     this.productName = '';
     this.description = '';
     this.imageUrl = '';
+    this.price = null;
+    this.unit = '1 Unit';
+    this.packagingName = 'Standard';
     this.brandId = null;
     this.categoryId = null;
+  }
+
+  getActivePackaging(product: ProductListItemResponse): ProductPackagingSummary | null {
+    if (!product.packagings || product.packagings.length === 0) {
+      return null;
+    }
+    const selectedId = this.selectedPackaging[product.productId];
+    if (selectedId) {
+      const found = product.packagings.find((p) => p.packagingId === selectedId);
+      if (found) return found;
+    }
+    return product.packagings[0];
+  }
+
+  onSelectPackaging(productId: number, packagingId: number): void {
+    this.selectedPackaging[productId] = Number(packagingId);
+  }
+
+  addToCart(product: ProductListItemResponse, buyNow: boolean = false): void {
+    const pkg = this.getActivePackaging(product);
+    if (!pkg) {
+      this.errorMessage.set(`No packaging option is available for "${product.productName}" yet.`);
+      return;
+    }
+
+    if (buyNow) {
+      this.buyingNowId.set(product.productId);
+    } else {
+      this.addingToCartId.set(product.productId);
+    }
+
+    this.errorMessage.set('');
+    this.cartService.addItem({ packagingId: pkg.packagingId, quantity: 1 }).subscribe({
+      next: () => {
+        this.addingToCartId.set(null);
+        this.buyingNowId.set(null);
+
+        if (buyNow) {
+          void this.router.navigate(['/cart']);
+        } else {
+          this.successMessage.set(`Added 1x ${product.productName} (${pkg.packagingName}) to your cart!`);
+          setTimeout(() => {
+            if (this.successMessage().startsWith('Added 1x')) {
+              this.successMessage.set('');
+            }
+          }, 3500);
+        }
+      },
+      error: (error) => {
+        this.addingToCartId.set(null);
+        this.buyingNowId.set(null);
+        this.errorMessage.set(
+          error.error?.message || error.error?.title || 'Unable to add item to cart. Please try again.'
+        );
+      }
+    });
   }
 
   searchProducts(): void {

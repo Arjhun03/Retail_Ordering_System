@@ -157,7 +157,10 @@ export class CatalogService {
     categoryId: number;
     productName: string;
     description?: string | null;
-    imageUrl?: string | null;
+    imageUrl: string;
+    price?: number | null;
+    unit?: string | null;
+    packagingName?: string | null;
   }): Observable<ProductDetailResponse> {
     return this.http.post<ProductDetailResponse>(`${this.productsUrl}/my-brand`, request);
   }

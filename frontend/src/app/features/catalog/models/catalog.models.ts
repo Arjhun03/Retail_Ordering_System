@@ -31,6 +31,14 @@ export interface UpdateCategoryRequest extends CreateCategoryRequest {
   isActive: boolean;
 }
 
+export interface ProductPackagingSummary {
+  packagingId: number;
+  packagingName: string;
+  price: number;
+  unit: string;
+  stockQuantity: number;
+}
+
 export interface ProductListItemResponse {
   productId: number;
   productName: string;
@@ -41,6 +49,9 @@ export interface ProductListItemResponse {
   categoryId: number;
   categoryName: string;
   isActive: boolean;
+  startingPrice?: number | null;
+  defaultPackagingId?: number | null;
+  packagings?: ProductPackagingSummary[] | null;
 }
 
 export interface PackagingResponse {

@@ -1,13 +1,16 @@
-
 <div class="products-page">
 
   <div class="page-header">
     <div>
-      <h1>Product Management</h1>
-      @if (authService.isBrandManager()) {
+      @if (authService.isCustomer()) {
+        <h1>Shop Fresh Products</h1>
+        <p>Explore artisan foods, refreshing drinks, and pantry essentials. Add to cart or buy with one click!</p>
+      } @else if (authService.isBrandManager()) {
+        <h1>Product Management</h1>
         <p>Managing products for brand: <strong>{{ authService.currentUser()?.brandName || 'My Brand' }}</strong></p>
       } @else {
-        <p>View, create and manage products.</p>
+        <h1>Product Catalog & Management</h1>
+        <p>View, create, and manage all catalog products across brands.</p>
       }
     </div>
     <span class="total-count">{{ totalCount }} Products</span>
@@ -21,6 +24,7 @@
     <div class="alert success">{{ successMessage() }}</div>
   }
 
+  <!-- Add / Edit Form: Admin and Brand Manager Only -->
   @if (authService.isAdmin() || authService.isBrandManager()) {
     <section class="form-card">
       <h2>{{ editingId !== null ? 'Edit Product' : 'Add New Product' }}</h2>
@@ -35,7 +39,7 @@
             type="text"
             [(ngModel)]="productName"
             maxlength="150"
-            placeholder="Enter product name"
+            placeholder="e.g. Supreme Truffle Pizza"
             required
           />
         </div>
@@ -45,7 +49,7 @@
             <label>Brand</label>
             <div class="locked-brand-pill">
               🏢 <strong>{{ authService.currentUser()?.brandName || 'My Brand' }}</strong>
-              <span class="subtext">(Automatically attached server-side)</span>
+              <span class="subtext">(Automatically assigned to your brand)</span>
             </div>
           </div>
         } @else {
@@ -72,47 +76,94 @@
           </select>
         </div>
 
-      <div class="form-group">
-        <label for="description">Description</label>
-        <textarea
-          id="description"
-          name="description"
-          [(ngModel)]="description"
-          rows="3"
-          placeholder="Enter product description"
-        ></textarea>
-      </div>
+        <div class="form-group">
+          <label for="imageUrl">Product Image URL *</label>
+          <input
+            id="imageUrl"
+            name="imageUrl"
+            type="url"
+            [(ngModel)]="imageUrl"
+            placeholder="https://images.unsplash.com/photo-..."
+            required
+          />
+          <span class="field-hint">A valid web image URL is required for the customer storefront.</span>
+        </div>
 
-      <div class="form-group">
-        <label for="imageUrl">Image URL</label>
-        <input
-          id="imageUrl"
-          name="imageUrl"
-          type="url"
-          [(ngModel)]="imageUrl"
-          placeholder="Enter product image URL"
-        />
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" [disabled]="saving()">
-          {{ saving() ? 'Saving...' : editingId !== null ? 'Update Product' : 'Add Product' }}
-        </button>
-
-        @if (editingId !== null) {
-          <button type="button" class="cancel-btn" (click)="resetForm()">
-            Cancel
-          </button>
+        @if (imageUrl.trim()) {
+          <div class="image-preview-container">
+            <span class="preview-label">Live Image Preview:</span>
+            <div class="image-preview-card">
+              <img [src]="imageUrl" alt="Product preview" (error)="imageUrl = ''" />
+            </div>
+          </div>
         }
-      </div>
 
-    </form>
-  </section>
+        @if (editingId === null) {
+          <div class="form-row pricing-row">
+            <div class="form-group">
+              <label for="price">Starting Price ($)</label>
+              <input
+                id="price"
+                name="price"
+                type="number"
+                step="0.01"
+                min="0.01"
+                [(ngModel)]="price"
+                placeholder="e.g. 12.99"
+              />
+            </div>
+            <div class="form-group">
+              <label for="unit">Packaging Unit</label>
+              <input
+                id="unit"
+                name="unit"
+                type="text"
+                [(ngModel)]="unit"
+                placeholder="e.g. 1 Pie, 330ml, 1 Box"
+              />
+            </div>
+            <div class="form-group">
+              <label for="packagingName">Packaging Option</label>
+              <input
+                id="packagingName"
+                name="packagingName"
+                type="text"
+                [(ngModel)]="packagingName"
+                placeholder="e.g. Standard, Regular 8-inch"
+              />
+            </div>
+          </div>
+        }
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            name="description"
+            [(ngModel)]="description"
+            rows="3"
+            placeholder="Enter appealing product description..."
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="submit-btn" [disabled]="saving()">
+            {{ saving() ? 'Saving Product...' : editingId !== null ? 'Update Product' : 'Add Product' }}
+          </button>
+
+          @if (editingId !== null) {
+            <button type="button" class="cancel-btn" (click)="resetForm()">
+              Cancel
+            </button>
+          }
+        </div>
+
+      </form>
+    </section>
   }
 
+  <!-- Search and Filters -->
   <section class="filter-card">
-    <h2>Search and Filter Products</h2>
-
     <div class="filters">
       <input
         type="text"
@@ -140,52 +191,165 @@
         }
       </select>
 
-      <button type="button" (click)="searchProducts()">Search</button>
+      <button type="button" class="search-btn" (click)="searchProducts()">Search</button>
       <button type="button" class="clear-btn" (click)="clearFilters()">Clear</button>
     </div>
   </section>
 
-  <section class="table-card">
-    <h2>Products List</h2>
+  <!-- CUSTOMER STOREFRONT GRID VIEW -->
+  @if (authService.isCustomer()) {
+    <section class="storefront-section">
+      @if (loading()) {
+        <p class="loading">Loading fresh products...</p>
+      } @else if (products().length === 0) {
+        <div class="empty-state">
+          <span class="empty-icon">🛒</span>
+          <h3>No products found</h3>
+          <p>Try clearing filters or search terms to see available items.</p>
+        </div>
+      } @else {
+        <div class="storefront-grid">
+          @for (product of products(); track product.productId) {
+            <div class="store-card">
+              <div class="card-image-wrap">
+                <img
+                  [src]="product.imageUrl || defaultImage"
+                  [alt]="product.productName"
+                  class="card-img"
+                  loading="lazy"
+                />
+                <span class="category-badge">{{ product.categoryName }}</span>
+              </div>
 
-    @if (loading()) {
-      <p class="loading">Loading products...</p>
-    } @else if (products().length === 0) {
-      <p class="empty">No products found.</p>
-    } @else {
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Product Name</th>
-              <th>Brand</th>
-              <th>Category</th>
-              <th>Description</th>
-              <th>Status</th>
-              @if (authService.isAdmin() || authService.isBrandManager()) {
-                <th>Actions</th>
-              }
-            </tr>
-          </thead>
+              <div class="card-content">
+                <span class="brand-name">{{ product.brandName }}</span>
+                <h3 class="product-name">{{ product.productName }}</h3>
+                <p class="product-description">{{ product.description || 'Delicious freshly prepared retail product.' }}</p>
 
-          <tbody>
-            @for (product of products(); track product.productId) {
-              <tr>
-                <td>{{ product.productId }}</td>
-                <td>{{ product.productName }}</td>
-                <td>{{ product.brandName }}</td>
-                <td>{{ product.categoryName }}</td>
-                <td>{{ product.description || '-' }}</td>
-                <td>
-                  <span
-                    [class.active]="product.isActive"
-                    [class.inactive]="!product.isActive"
+                <!-- Packaging option selector -->
+                @if (product.packagings && product.packagings.length > 1) {
+                  <div class="packaging-selector-box">
+                    <label for="pkg-select-{{ product.productId }}">Option / Size:</label>
+                    <select
+                      id="pkg-select-{{ product.productId }}"
+                      [ngModel]="getActivePackaging(product)?.packagingId"
+                      (ngModelChange)="onSelectPackaging(product.productId, $event)"
+                    >
+                      @for (pkg of product.packagings; track pkg.packagingId) {
+                        <option [value]="pkg.packagingId">
+                          {{ pkg.packagingName }} - {{ pkg.price | currency }} ({{ pkg.unit }})
+                        </option>
+                      }
+                    </select>
+                  </div>
+                }
+
+                <div class="card-price-row">
+                  <div class="price-display">
+                    @if (getActivePackaging(product); as activePkg) {
+                      <span class="price-amount">{{ activePkg.price | currency }}</span>
+                      <span class="price-unit">/ {{ activePkg.unit }}</span>
+                    } @else {
+                      <span class="price-amount">{{ product.startingPrice ? (product.startingPrice | currency) : 'Inquire' }}</span>
+                    }
+                  </div>
+
+                  @if (getActivePackaging(product); as activePkg) {
+                    @if (activePkg.stockQuantity > 0) {
+                      <span class="badge in-stock">In Stock</span>
+                    } @else {
+                      <span class="badge out-of-stock">Sold Out</span>
+                    }
+                  }
+                </div>
+
+                <!-- Customer Action Buttons: Add to Cart & Buy Now -->
+                <div class="card-actions">
+                  <button
+                    type="button"
+                    class="btn-action btn-add-cart"
+                    [disabled]="addingToCartId() === product.productId || buyingNowId() === product.productId || !getActivePackaging(product) || getActivePackaging(product)?.stockQuantity! <= 0"
+                    (click)="addToCart(product, false)"
                   >
-                    {{ product.isActive ? 'Active' : 'Inactive' }}
-                  </span>
-                </td>
-                @if (authService.isAdmin() || authService.isBrandManager()) {
+                    @if (addingToCartId() === product.productId) {
+                      Adding...
+                    } @else {
+                      🛒 Add to Cart
+                    }
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-action btn-buy-now"
+                    [disabled]="addingToCartId() === product.productId || buyingNowId() === product.productId || !getActivePackaging(product) || getActivePackaging(product)?.stockQuantity! <= 0"
+                    (click)="addToCart(product, true)"
+                  >
+                    @if (buyingNowId() === product.productId) {
+                      Processing...
+                    } @else {
+                      ⚡ Buy Now
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+
+  <!-- ADMIN & BRAND MANAGER TABLE VIEW -->
+  @if (authService.isAdmin() || authService.isBrandManager()) {
+    <section class="table-card">
+      <h2>Products Inventory Table</h2>
+
+      @if (loading()) {
+        <p class="loading">Loading products...</p>
+      } @else if (products().length === 0) {
+        <p class="empty">No products found.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>ID</th>
+                <th>Product Name</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>Starting Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (product of products(); track product.productId) {
+                <tr>
+                  <td class="col-image">
+                    <img
+                      [src]="product.imageUrl || defaultImage"
+                      [alt]="product.productName"
+                      class="table-thumb"
+                      loading="lazy"
+                    />
+                  </td>
+                  <td>#{{ product.productId }}</td>
+                  <td class="col-name">{{ product.productName }}</td>
+                  <td>{{ product.brandName }}</td>
+                  <td>{{ product.categoryName }}</td>
+                  <td class="col-price">
+                    {{ product.startingPrice ? (product.startingPrice | currency) : '—' }}
+                  </td>
+                  <td>
+                    <span
+                      [class.active]="product.isActive"
+                      [class.inactive]="!product.isActive"
+                    >
+                      {{ product.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
                   <td class="actions">
                     <button
                       type="button"
@@ -205,35 +369,36 @@
                       </button>
                     }
                   </td>
-                }
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
 
-    @if (totalPages > 1) {
-      <div class="pagination">
-        <button
-          type="button"
-          (click)="changePage(currentPage - 1)"
-          [disabled]="currentPage === 1"
-        >
-          Previous
-        </button>
+  <!-- Pagination -->
+  @if (totalPages > 1) {
+    <div class="pagination">
+      <button
+        type="button"
+        (click)="changePage(currentPage - 1)"
+        [disabled]="currentPage === 1"
+      >
+        Previous
+      </button>
 
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
 
-        <button
-          type="button"
-          (click)="changePage(currentPage + 1)"
-          [disabled]="currentPage === totalPages"
-        >
-          Next
-        </button>
-      </div>
-    }
-  </section>
+      <button
+        type="button"
+        (click)="changePage(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+      >
+        Next
+      </button>
+    </div>
+  }
 
 </div>

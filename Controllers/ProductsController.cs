@@ -13,11 +13,16 @@ public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
     private readonly IUserRepository _userRepository;
+    private readonly IPackagingService _packagingService;
 
-    public ProductsController(IProductService productService, IUserRepository userRepository)
+    public ProductsController(
+        IProductService productService,
+        IUserRepository userRepository,
+        IPackagingService packagingService)
     {
         _productService = productService;
         _userRepository = userRepository;
+        _packagingService = packagingService;
     }
 
     [HttpGet("my-brand")]
@@ -72,6 +77,18 @@ public class ProductsController : ControllerBase
                 request.ImageUrl);
 
             var result = await _productService.CreateAsync(fullRequest, ct);
+
+            if (request.Price.HasValue && request.Price.Value > 0)
+            {
+                var pkgName = string.IsNullOrWhiteSpace(request.PackagingName) ? "Standard" : request.PackagingName.Trim();
+                var unit = string.IsNullOrWhiteSpace(request.Unit) ? "1 Unit" : request.Unit.Trim();
+                await _packagingService.CreateAsync(new CreatePackagingRequest(
+                    result.ProductId,
+                    pkgName,
+                    request.Price.Value,
+                    unit
+                ), ct);
+            }
 
             return CreatedAtAction(
                 nameof(GetProduct),
