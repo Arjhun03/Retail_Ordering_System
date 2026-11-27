@@ -24,7 +24,7 @@
 
         <!-- Cart and Orders: visible to Customers only -->
         @if (authService.isCustomer()) {
-          <a routerLink="/cart" routerLinkActive="active" class="nav-item cart-item">
+          <a routerLink="/cart" routerLinkActive="active" class="nav-item cart-item" (click)="onCartClick()">
             Cart
             @if (cartService.itemCount() > 0) {
               <span class="cart-badge">{{ cartService.itemCount() }}</span>

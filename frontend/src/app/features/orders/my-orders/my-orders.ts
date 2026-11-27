@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
@@ -14,38 +14,65 @@ import { OrderListItem } from '../../../core/models/order.model';
 export class MyOrdersComponent implements OnInit {
   private readonly orderService = inject(OrderService);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  orders: OrderListItem[] = [];
-  loading = false;
-  errorMessage = '';
-  page = 1;
-  pageSize = 10;
-  totalPages = 1;
+  private readonly ordersSignal = signal<OrderListItem[]>([]);
+  private readonly loadingSignal = signal(false);
+  private readonly errorMessageSignal = signal('');
+  private readonly pageSignal = signal(1);
+  private readonly pageSizeSignal = signal(10);
+  private readonly totalPagesSignal = signal(1);
+
+  get orders(): OrderListItem[] {
+    return this.ordersSignal();
+  }
+
+  get loading(): boolean {
+    return this.loadingSignal();
+  }
+
+  get errorMessage(): string {
+    return this.errorMessageSignal();
+  }
+
+  get page(): number {
+    return this.pageSignal();
+  }
+
+  get pageSize(): number {
+    return this.pageSizeSignal();
+  }
+
+  get totalPages(): number {
+    return this.totalPagesSignal();
+  }
 
   ngOnInit(): void {
     this.loadOrders();
   }
 
   loadOrders(): void {
-    this.loading = true;
-    this.errorMessage = '';
+    this.loadingSignal.set(true);
+    this.errorMessageSignal.set('');
+    this.cdr.markForCheck();
 
-    this.orderService.getMyOrders(this.page, this.pageSize).subscribe({
+    this.orderService.getMyOrders(this.pageSignal(), this.pageSizeSignal()).subscribe({
       next: (response) => {
-        const list = Array.isArray(response)
-          ? response
-          : (response?.items ?? response?.data ?? []);
-        this.orders = list;
-        this.totalPages = response?.totalPages ?? 1;
-        this.loading = false;
+        const list = response?.items ?? [];
+        this.ordersSignal.set(list);
+        this.totalPagesSignal.set(Math.max(1, response?.totalPages ?? 1));
+        this.loadingSignal.set(false);
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error loading orders:', error);
-        this.errorMessage =
+        this.errorMessageSignal.set(
           error.error?.message ||
           error.error?.title ||
-          'Unable to load your orders. Please try again.';
-        this.loading = false;
+          'Unable to load your orders. Check that the API is running, then try again.'
+        );
+        this.loadingSignal.set(false);
+        this.cdr.markForCheck();
       },
     });
   }
@@ -55,15 +82,15 @@ export class MyOrdersComponent implements OnInit {
   }
 
   previousPage(): void {
-    if (this.page > 1) {
-      this.page--;
+    if (this.pageSignal() > 1) {
+      this.pageSignal.update((p) => p - 1);
       this.loadOrders();
     }
   }
 
   nextPage(): void {
-    if (this.page < this.totalPages) {
-      this.page++;
+    if (this.pageSignal() < this.totalPagesSignal()) {
+      this.pageSignal.update((p) => p + 1);
       this.loadOrders();
     }
   }

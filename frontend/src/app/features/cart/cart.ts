@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
@@ -12,42 +12,71 @@ import { Cart } from '../../core/models/cart.model';
   styleUrl: './cart.scss',
 })
 export class CartComponent implements OnInit {
-  cart: Cart | null = null;
-  loading = false;
-  updatingItemId: number | null = null;
-  removingItemId: number | null = null;
-  errorMessage = '';
-  successMessage = '';
+  private readonly cartService = inject(CartService);
+  private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor(
-    private cartService: CartService,
-    private router: Router
-  ) {}
+  private readonly loadingSignal = signal(false);
+  private readonly updatingItemIdSignal = signal<number | null>(null);
+  private readonly removingItemIdSignal = signal<number | null>(null);
+  private readonly errorMessageSignal = signal('');
+  private readonly successMessageSignal = signal('');
+
+  get cart(): Cart | null {
+    return this.cartService.cart();
+  }
+
+  get loading(): boolean {
+    return this.loadingSignal();
+  }
+
+  get updatingItemId(): number | null {
+    return this.updatingItemIdSignal();
+  }
+
+  get removingItemId(): number | null {
+    return this.removingItemIdSignal();
+  }
+
+  get errorMessage(): string {
+    return this.errorMessageSignal();
+  }
+
+  get successMessage(): string {
+    return this.successMessageSignal();
+  }
+
+  get isCartEmpty(): boolean {
+    const c = this.cart;
+    return !c || !c.items || c.items.length === 0;
+  }
 
   ngOnInit(): void {
     this.loadCart();
   }
 
   loadCart(): void {
-    this.loading = true;
-    this.errorMessage = '';
+    this.loadingSignal.set(true);
+    this.errorMessageSignal.set('');
+    this.cdr.markForCheck();
 
     this.cartService.getCart().subscribe({
-      next: (response) => {
-        this.cart = response;
-        this.loading = false;
+      next: () => {
+        this.loadingSignal.set(false);
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error loading cart:', error);
-        this.errorMessage = 'Unable to load your cart.';
-        this.loading = false;
+        this.errorMessageSignal.set('Unable to load your cart. Check that the API is running, then try again.');
+        this.loadingSignal.set(false);
+        this.cdr.markForCheck();
       },
     });
   }
 
   increaseQuantity(item: Cart['items'][number]): void {
     if (item.quantity >= 100) {
-      this.errorMessage = 'Maximum quantity is 100.';
+      this.errorMessageSignal.set('Maximum quantity is 100.');
       return;
     }
 
@@ -63,49 +92,49 @@ export class CartComponent implements OnInit {
   }
 
   updateQuantity(cartItemId: number, quantity: number): void {
-    this.errorMessage = '';
-    this.successMessage = '';
-    this.updatingItemId = cartItemId;
+    this.errorMessageSignal.set('');
+    this.successMessageSignal.set('');
+    this.updatingItemIdSignal.set(cartItemId);
+    this.cdr.markForCheck();
 
     this.cartService.updateItem(cartItemId, quantity).subscribe({
-      next: (response) => {
-        this.cart = response;
-        this.updatingItemId = null;
+      next: () => {
+        this.updatingItemIdSignal.set(null);
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error updating cart:', error);
-        this.errorMessage = error.error?.message || 'Unable to update quantity.';
-        this.updatingItemId = null;
+        this.errorMessageSignal.set(error.error?.message || 'Unable to update quantity.');
+        this.updatingItemIdSignal.set(null);
+        this.cdr.markForCheck();
       },
     });
   }
 
   removeItem(cartItemId: number): void {
-    this.errorMessage = '';
-    this.successMessage = '';
-    this.removingItemId = cartItemId;
+    this.errorMessageSignal.set('');
+    this.successMessageSignal.set('');
+    this.removingItemIdSignal.set(cartItemId);
+    this.cdr.markForCheck();
 
     this.cartService.removeItem(cartItemId).subscribe({
-      next: (response) => {
-        this.cart = response;
-        this.successMessage = 'Item removed from cart.';
-        this.removingItemId = null;
+      next: () => {
+        this.successMessageSignal.set('Item removed from cart.');
+        this.removingItemIdSignal.set(null);
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error removing item:', error);
-        this.errorMessage = error.error?.message || 'Unable to remove item.';
-        this.removingItemId = null;
+        this.errorMessageSignal.set(error.error?.message || 'Unable to remove item.');
+        this.removingItemIdSignal.set(null);
+        this.cdr.markForCheck();
       },
     });
   }
 
-  get isCartEmpty(): boolean {
-    return !this.cart || this.cart.items.length === 0;
-  }
-
   proceedToCheckout(): void {
     if (this.isCartEmpty) {
-      this.errorMessage = 'Your cart is empty. Please add items to proceed.';
+      this.errorMessageSignal.set('Your cart is empty. Please add items to proceed.');
       return;
     }
     void this.router.navigate(['/orders/checkout']);

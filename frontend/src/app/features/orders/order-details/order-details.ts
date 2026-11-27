@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
@@ -12,21 +12,32 @@ import { OrderDetail } from '../../../core/models/order.model';
   styleUrl: './order-details.scss',
 })
 export class OrderDetailsComponent implements OnInit {
-  order: OrderDetail | null = null;
-  loading = false;
-  errorMessage = '';
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly orderService = inject(OrderService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private orderService: OrderService,
-  ) {}
+  private readonly orderSignal = signal<OrderDetail | null>(null);
+  private readonly loadingSignal = signal(false);
+  private readonly errorMessageSignal = signal('');
+
+  get order(): OrderDetail | null {
+    return this.orderSignal();
+  }
+
+  get loading(): boolean {
+    return this.loadingSignal();
+  }
+
+  get errorMessage(): string {
+    return this.errorMessageSignal();
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!id || id <= 0) {
-      this.errorMessage = 'Invalid order ID.';
+      this.errorMessageSignal.set('Invalid order ID.');
       return;
     }
 
@@ -34,23 +45,26 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   loadOrder(orderId: number): void {
-    this.loading = true;
-    this.errorMessage = '';
+    this.loadingSignal.set(true);
+    this.errorMessageSignal.set('');
+    this.cdr.markForCheck();
 
     this.orderService.getOrderById(orderId).subscribe({
       next: (response) => {
-        this.order = response;
-        this.loading = false;
+        this.orderSignal.set(response);
+        this.loadingSignal.set(false);
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error loading order:', error);
-        this.errorMessage = 'Unable to load order details.';
-        this.loading = false;
+        this.errorMessageSignal.set('Unable to load order details.');
+        this.loadingSignal.set(false);
+        this.cdr.markForCheck();
       },
     });
   }
 
   backToOrders(): void {
-    this.router.navigate(['/orders']);
+    void this.router.navigate(['/orders']);
   }
 }

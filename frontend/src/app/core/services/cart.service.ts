@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, timeout } from 'rxjs';
 import { API_BASE_URL } from '../auth/auth.constants';
 import { AddCartItemRequest, Cart } from '../models/cart.model';
 
@@ -25,6 +25,7 @@ export class CartService {
 
   getCart(): Observable<Cart> {
     return this.http.get<Cart>(this.apiUrl).pipe(
+      timeout(15000),
       tap((cart) => {
         if (cart) {
           this.cart.set({
@@ -44,6 +45,7 @@ export class CartService {
 
   addItem(request: AddCartItemRequest): Observable<Cart> {
     return this.http.post<Cart>(`${this.apiUrl}/items`, request).pipe(
+      timeout(15000),
       tap((cart) => {
         if (cart) {
           this.cart.set({

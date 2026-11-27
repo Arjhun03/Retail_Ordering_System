@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
 import { API_BASE_URL } from '../auth/auth.constants';
 import {
   OrderDetail,
   OrderListItem,
   PlaceOrderRequest,
+  PagedResponse,
 } from '../models/order.model';
 
 @Injectable({
@@ -30,8 +31,10 @@ export class OrderService {
     return this.getOrderById(orderId);
   }
 
-  getMyOrders(page = 1, pageSize = 10): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}`);
+  getMyOrders(page = 1, pageSize = 10): Observable<PagedResponse<OrderListItem>> {
+    return this.http.get<PagedResponse<OrderListItem>>(
+      `${this.apiUrl}?page=${page}&pageSize=${pageSize}`,
+    ).pipe(timeout(15000));
   }
 
   getOrders(): Observable<OrderListItem[]> {

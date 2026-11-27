@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,21 +17,38 @@ export class CheckoutComponent implements OnInit {
   private readonly orderService = inject(OrderService);
   readonly cartService = inject(CartService);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   deliveryAddress = '';
-  loading = false;
-  loadingCart = false;
-  errorMessage = '';
+  private readonly loadingSignal = signal(false);
+  private readonly loadingCartSignal = signal(false);
+  private readonly errorMessageSignal = signal('');
+
+  get loading(): boolean {
+    return this.loadingSignal();
+  }
+
+  get loadingCart(): boolean {
+    return this.loadingCartSignal();
+  }
+
+  get errorMessage(): string {
+    return this.errorMessageSignal();
+  }
 
   ngOnInit(): void {
     if (!this.cartService.cart()) {
-      this.loadingCart = true;
+      this.loadingCartSignal.set(true);
+      this.cdr.markForCheck();
+
       this.cartService.loadCart().subscribe({
         next: () => {
-          this.loadingCart = false;
+          this.loadingCartSignal.set(false);
+          this.cdr.markForCheck();
         },
         error: () => {
-          this.loadingCart = false;
+          this.loadingCartSignal.set(false);
+          this.cdr.markForCheck();
         },
       });
     }
@@ -43,22 +60,22 @@ export class CheckoutComponent implements OnInit {
   }
 
   placeOrder(): void {
-    this.errorMessage = '';
+    this.errorMessageSignal.set('');
 
     if (this.isCartEmpty) {
-      this.errorMessage = 'Your cart is empty. Please add items before checking out.';
+      this.errorMessageSignal.set('Your cart is empty. Please add items before checking out.');
       return;
     }
 
     const address = this.deliveryAddress.trim();
 
     if (!address) {
-      this.errorMessage = 'Please enter your delivery address.';
+      this.errorMessageSignal.set('Please enter your delivery address.');
       return;
     }
 
     if (address.length > 500) {
-      this.errorMessage = 'Delivery address cannot exceed 500 characters.';
+      this.errorMessageSignal.set('Delivery address cannot exceed 500 characters.');
       return;
     }
 
@@ -66,11 +83,14 @@ export class CheckoutComponent implements OnInit {
       deliveryAddress: address,
     };
 
-    this.loading = true;
+    this.loadingSignal.set(true);
+    this.cdr.markForCheck();
 
     this.orderService.placeOrder(request).subscribe({
       next: (order) => {
-        this.loading = false;
+        this.loadingSignal.set(false);
+        this.cdr.markForCheck();
+
         // Refresh cart state so frontend shows empty cart and 0 badge
         this.cartService.loadCart().subscribe({
           error: () => this.cartService.reset(),
@@ -79,11 +99,13 @@ export class CheckoutComponent implements OnInit {
       },
       error: (error) => {
         console.error('Checkout error:', error);
-        this.errorMessage =
+        this.errorMessageSignal.set(
           error.error?.message ||
           error.error?.title ||
-          'Unable to place your order. Please try again.';
-        this.loading = false;
+          'Unable to place your order. Please try again.'
+        );
+        this.loadingSignal.set(false);
+        this.cdr.markForCheck();
       },
     });
   }
