@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
@@ -12,17 +12,15 @@ import { OrderListItem } from '../../../core/models/order.model';
   styleUrl: './my-orders.scss',
 })
 export class MyOrdersComponent implements OnInit {
+  private readonly orderService = inject(OrderService);
+  private readonly router = inject(Router);
+
   orders: OrderListItem[] = [];
   loading = false;
   errorMessage = '';
   page = 1;
   pageSize = 10;
   totalPages = 1;
-
-  constructor(
-    private orderService: OrderService,
-    private router: Router,
-  ) {}
 
   ngOnInit(): void {
     this.loadOrders();
@@ -39,15 +37,18 @@ export class MyOrdersComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error(error);
-        this.errorMessage = 'Unable to load your orders.';
+        console.error('Error loading orders:', error);
+        this.errorMessage =
+          error.error?.message ||
+          error.error?.title ||
+          'Unable to load your orders. Please try again.';
         this.loading = false;
       },
     });
   }
 
   viewOrder(orderId: number): void {
-    this.router.navigate(['/orders', orderId]);
+    void this.router.navigate(['/orders', orderId]);
   }
 
   previousPage(): void {
@@ -62,5 +63,9 @@ export class MyOrdersComponent implements OnInit {
       this.page++;
       this.loadOrders();
     }
+  }
+
+  goToProducts(): void {
+    void this.router.navigate(['/catalog/products']);
   }
 }

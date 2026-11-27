@@ -11,10 +11,66 @@
 .orders-header h1 {
   font-size: 30px;
   margin-bottom: 8px;
+  color: #111827;
 }
 
 .orders-header p {
-  color: #777;
+  color: #6b7280;
+}
+
+.message {
+  padding: 30px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.error {
+  padding: 14px 18px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+  margin-bottom: 20px;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 14px;
+  }
+
+  h2 {
+    font-size: 22px;
+    color: #111827;
+    margin-bottom: 6px;
+  }
+
+  p {
+    color: #6b7280;
+    margin-bottom: 22px;
+  }
+
+  .btn-shop {
+    padding: 11px 24px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #1d4ed8;
+    }
+  }
 }
 
 .orders-list {
@@ -25,12 +81,14 @@
 
 .order-card {
   padding: 24px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
+  background: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .order-info {
@@ -43,127 +101,122 @@
 
 .label {
   display: block;
-  color: #777;
+  color: #6b7280;
   font-size: 13px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .order-info h3 {
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
 }
 
 .order-info p,
 .order-info strong {
-  font-size: 15px;
+  font-size: 14px;
+  color: #1f2937;
 }
 
 .status {
   display: inline-block;
-  padding: 7px 12px;
+  padding: 5px 12px;
   border-radius: 20px;
   font-size: 13px;
-  background: #eee;
+  font-weight: 500;
+  background: #f3f4f6;
+  color: #374151;
 }
 
 .status.pending {
-  background: #fff3cd;
-  color: #856404;
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .status.confirmed {
-  background: #d1ecf1;
-  color: #0c5460;
+  background: #e0f2fe;
+  color: #0369a1;
 }
 
 .status.preparing {
-  background: #e8ddff;
+  background: #ede9fe;
   color: #5b21b6;
 }
 
 .status.ready {
-  background: #d4edda;
-  color: #155724;
+  background: #dcfce7;
+  color: #15803d;
 }
 
 .status.delivered {
-  background: #d4edda;
-  color: #155724;
+  background: #dcfce7;
+  color: #15803d;
 }
 
 .status.cancelled {
-  background: #f8d7da;
-  color: #721c24;
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
-.order-card button,
+.btn-view,
 .pagination button {
-  padding: 11px 18px;
-  background: #222;
-  color: white;
-  border: none;
+  padding: 10px 18px;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #9ca3af;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
-.order-card button:hover,
-.pagination button:hover:not(:disabled) {
-  background: #444;
-}
+.btn-view {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
 
-.empty {
-  text-align: center;
-  padding: 60px 20px;
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
-}
-
-.empty p {
-  color: #777;
-  margin-top: 10px;
-}
-
-.message {
-  text-align: center;
-  padding: 30px;
-}
-
-.error {
-  color: #b42318;
-  background: #fef3f2;
-  padding: 15px;
-  border-radius: 8px;
+  &:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+  }
 }
 
 .pagination {
-  margin-top: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
-}
+  gap: 16px;
+  margin-top: 30px;
 
-.pagination button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-@media (max-width: 850px) {
-  .order-info {
-    grid-template-columns: repeat(2, 1fr);
+  span {
+    color: #6b7280;
+    font-size: 14px;
   }
+}
 
+@media (max-width: 800px) {
   .order-card {
     flex-direction: column;
     align-items: stretch;
   }
-}
-
-@media (max-width: 500px) {
-  .orders-container {
-    padding: 20px 12px;
-  }
 
   .order-info {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .btn-view {
+    text-align: center;
   }
 }

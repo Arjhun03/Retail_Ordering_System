@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
 import { Cart } from '../../core/models/cart.model';
 
@@ -18,7 +19,10 @@ export class CartComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  constructor(private cartService: CartService) {}
+  constructor(
+    private cartService: CartService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadCart();
@@ -100,6 +104,14 @@ export class CartComponent implements OnInit {
   }
 
   proceedToCheckout(): void {
-  alert('Checkout will be implemented in the next phase.');
-}
+    if (this.isCartEmpty) {
+      this.errorMessage = 'Your cart is empty. Please add items to proceed.';
+      return;
+    }
+    void this.router.navigate(['/orders/checkout']);
+  }
+
+  goToProducts(): void {
+    void this.router.navigate(['/catalog/products']);
+  }
 }

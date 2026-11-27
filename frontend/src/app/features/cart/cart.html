@@ -20,6 +20,9 @@
     <div class="empty-icon">🛒</div>
     <h2>Your cart is empty</h2>
     <p>Add products to your cart to get started.</p>
+    <button type="button" class="shop-btn" (click)="goToProducts()">
+      Browse Products
+    </button>
   </div>
 
   <div
@@ -36,7 +39,7 @@
           <p class="packaging-name">{{ item.packagingName }}</p>
           <p class="unit">{{ item.unit }}</p>
           <p class="unit-price">
-            ₹{{ item.unitPrice | number:'1.2-2' }} per unit
+            ${{ item.unitPrice | number:'1.2-2' }} per unit
           </p>
         </div>
 
@@ -60,7 +63,7 @@
           <button
             type="button"
             (click)="increaseQuantity(item)"
-            [disabled="
+            [disabled]="
               item.quantity >= 100 ||
               updatingItemId === item.cartItemId
             "
@@ -73,7 +76,7 @@
         <div class="item-subtotal">
           <p>Subtotal</p>
           <strong>
-            ₹{{ item.subtotal | number:'1.2-2' }}
+            ${{ item.subtotal | number:'1.2-2' }}
           </strong>
         </div>
 
@@ -99,7 +102,7 @@
       <div class="summary-row total-row">
         <span>Total</span>
         <strong>
-          ₹{{ cart.totalAmount | number:'1.2-2' }}
+          ${{ cart.totalAmount | number:'1.2-2' }}
         </strong>
       </div>
 
