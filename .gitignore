@@ -12,6 +12,8 @@ packages/
 .idea/
 .vs/
 .vscode/
+.local/
+Library/
 *.suo
 *.user
 *.userosscache

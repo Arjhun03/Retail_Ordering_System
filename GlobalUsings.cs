@@ -1,0 +1,15 @@
+global using Retail_Ordering.Api;
+global using Retail_Ordering.Api.DTOs;
+global using Retail_Ordering.Api.Enums;
+global using Retail_Ordering.Api.Interfaces.Repositories;
+global using Retail_Ordering.Api.Interfaces.Services;
+global using Retail_Ordering.Api.Middleware;
+global using Retail_Ordering.Api.Repositories;
+global using Retail_Ordering.Api.Services;
+global using Retail_Ordering_system.Data;
+global using Retail_Ordering_system.DTOs;
+global using Retail_Ordering_system.Interfaces.Repositories;
+global using Retail_Ordering_system.Interfaces.Services;
+global using Retail_Ordering_system.Models;
+global using Retail_Ordering_system.Repositories;
+global using Retail_Ordering_system.Services;
