@@ -28,6 +28,8 @@ public class ProductRepository : IProductRepository
             .AsNoTracking()
             .Include(p => p.Brand)
             .Include(p => p.Category)
+            .Include(p => p.Packagings)
+                .ThenInclude(pkg => pkg.Inventory)
             .Where(p => p.IsActive);
 
         if (categoryId.HasValue)
@@ -63,7 +65,16 @@ public class ProductRepository : IProductRepository
                 p.Brand.BrandName,
                 p.CategoryId,
                 p.Category.CategoryName,
-                p.IsActive))
+                p.IsActive,
+                p.Packagings.Where(pkg => pkg.IsActive).OrderBy(pkg => pkg.Price).Select(pkg => (decimal?)pkg.Price).FirstOrDefault(),
+                p.Packagings.Where(pkg => pkg.IsActive).OrderBy(pkg => pkg.Price).Select(pkg => (int?)pkg.PackagingId).FirstOrDefault(),
+                p.Packagings.Where(pkg => pkg.IsActive).OrderBy(pkg => pkg.Price).Select(pkg => new ProductPackagingSummary(
+                    pkg.PackagingId,
+                    pkg.PackagingName,
+                    pkg.Price,
+                    pkg.Unit,
+                    pkg.Inventory != null ? pkg.Inventory.StockQuantity : 0
+                )).ToList()))
             .ToListAsync(ct);
 
         return new PagedResponse<ProductListItemResponse>

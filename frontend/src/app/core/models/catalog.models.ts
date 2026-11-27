@@ -23,6 +23,14 @@ export interface Packaging {
   availableQuantity?: number | null;
 }
 
+export interface ProductPackagingSummary {
+  packagingId: number;
+  packagingName: string;
+  price: number;
+  unit: string;
+  stockQuantity: number;
+}
+
 export interface ProductListItem {
   productId: number;
   productName: string;
@@ -33,6 +41,9 @@ export interface ProductListItem {
   categoryId: number;
   categoryName: string;
   isActive: boolean;
+  startingPrice?: number | null;
+  defaultPackagingId?: number | null;
+  packagings?: ProductPackagingSummary[] | null;
 }
 
 export interface ProductDetail {
