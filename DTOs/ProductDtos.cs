@@ -1,4 +1,3 @@
-
 using System.ComponentModel.DataAnnotations;
 
 namespace Retail_Ordering.Api.DTOs;
@@ -7,15 +6,15 @@ public sealed record CreateProductRequest(
     int BrandId,
     int CategoryId,
 
-    [property: Required]
-    [property: MaxLength(150)]
+    [Required]
+    [MaxLength(150)]
     string ProductName,
 
-    [property: MaxLength(500)]
+    [MaxLength(500)]
     string? Description,
 
-    [property: MaxLength(500)]
-    [property: Url]
+    [MaxLength(500)]
+    [Url]
     string? ImageUrl
 );
 
@@ -23,15 +22,15 @@ public sealed record UpdateProductRequest(
     int BrandId,
     int CategoryId,
 
-    [property: Required]
-    [property: MaxLength(150)]
+    [Required]
+    [MaxLength(150)]
     string ProductName,
 
-    [property: MaxLength(500)]
+    [MaxLength(500)]
     string? Description,
 
-    [property: MaxLength(500)]
-    [property: Url]
+    [MaxLength(500)]
+    [Url]
     string? ImageUrl,
 
     bool IsActive

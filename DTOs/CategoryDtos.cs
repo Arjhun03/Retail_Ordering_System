@@ -1,23 +1,22 @@
-
 using System.ComponentModel.DataAnnotations;
 
 namespace Retail_Ordering.Api.DTOs;
 
 public sealed record CreateCategoryRequest(
-    [property: Required]
-    [property: MaxLength(100)]
+    [Required]
+    [MaxLength(100)]
     string CategoryName,
 
-    [property: MaxLength(500)]
+    [MaxLength(500)]
     string? Description
 );
 
 public sealed record UpdateCategoryRequest(
-    [property: Required]
-    [property: MaxLength(100)]
+    [Required]
+    [MaxLength(100)]
     string CategoryName,
 
-    [property: MaxLength(500)]
+    [MaxLength(500)]
     string? Description,
 
     bool IsActive

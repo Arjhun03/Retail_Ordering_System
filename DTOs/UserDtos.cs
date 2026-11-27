@@ -11,5 +11,5 @@ public sealed record UserProfileResponse(
     DateTime CreatedAtUtc);
 
 public sealed record UpdateUserProfileRequest(
-    [property: Required, StringLength(100, MinimumLength = 1)] string FullName,
-    [property: StringLength(15)] string? Phone);
+    [Required, StringLength(100, MinimumLength = 1)] string FullName,
+    [StringLength(15)] string? Phone);
