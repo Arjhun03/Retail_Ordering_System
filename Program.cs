@@ -18,13 +18,16 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Developer machine-local settings (connection strings, local secrets) that are not tracked in Git
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
 // Add services to the container.
 builder.Services.AddControllers();
 
 // Database context
 var connectionString = builder.Configuration.GetConnectionString("RetailDatabase")
     ?? builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Server=localhost,1433;Database=RetailOrderingDb;User Id=sa;Password=n3v1tnpYqFRD3b/iPU7HrhyPFBRwqs8s;TrustServerCertificate=True;MultipleActiveResultSets=true;";
+    ?? "Server=localhost,1433;Database=RetailOrderingDb;User Id=sa;Password=YourPasswordHere;TrustServerCertificate=True;MultipleActiveResultSets=true;";
 
 builder.Services.AddDbContext<RetailDbContext>(options =>
     options.UseSqlServer(connectionString));

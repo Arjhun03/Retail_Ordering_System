@@ -43,3 +43,10 @@ coverage.*
 .env.*
 !.env.example
 secrets.json
+
+# Local developer configuration & connection strings (never commit machine credentials)
+appsettings.Local.json
+appsettings.*.local.json
+appsettings.Development.local.json
+appsettings.Development.json
+!appsettings.Local.json.example
