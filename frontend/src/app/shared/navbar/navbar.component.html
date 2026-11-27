@@ -1,46 +1,61 @@
 <header class="app-header">
   <div class="container header-inner">
-    <a routerLink="/catalog/products" class="brand-link">
+    <a [routerLink]="authService.isLoggedIn() ? authService.getDefaultRouteForRole() : '/login'" class="brand-link">
       <span class="brand-icon">🍕</span>
       <span class="brand-text">Fresh<span class="brand-accent">Market</span></span>
     </a>
 
-    <nav class="nav-links">
-      <a routerLink="/catalog/products" routerLinkActive="active" class="nav-item">
-        Products
-      </a>
-      <a routerLink="/catalog/categories" routerLinkActive="active" class="nav-item">
-        Categories
-      </a>
-      <a routerLink="/catalog/brands" routerLinkActive="active" class="nav-item">
-        Brands
-      </a>
-
-      @if (authService.isLoggedIn()) {
-        <a routerLink="/cart" routerLinkActive="active" class="nav-item cart-item">
-          Cart
-          @if (cartService.itemCount() > 0) {
-            <span class="cart-badge">{{ cartService.itemCount() }}</span>
-          }
+    @if (authService.isLoggedIn()) {
+      <nav class="nav-links">
+        <!-- Products: visible to everyone logged in -->
+        <a routerLink="/catalog/products" routerLinkActive="active" class="nav-item">
+          Products
         </a>
 
-        <a routerLink="/orders" routerLinkActive="active" class="nav-item">
-          My Orders
-        </a>
+        <!-- Categories and Brands: visible to Admin & Brand Manager -->
+        @if (authService.isAdmin() || authService.isBrandManager()) {
+          <a routerLink="/catalog/categories" routerLinkActive="active" class="nav-item">
+            Categories
+          </a>
+          <a routerLink="/catalog/brands" routerLinkActive="active" class="nav-item">
+            Brands
+          </a>
+        }
 
+        <!-- Cart and Orders: visible to Customers and Admin -->
+        @if (authService.isCustomer() || authService.isAdmin()) {
+          <a routerLink="/cart" routerLinkActive="active" class="nav-item cart-item">
+            Cart
+            @if (cartService.itemCount() > 0) {
+              <span class="cart-badge">{{ cartService.itemCount() }}</span>
+            }
+          </a>
+
+          <a routerLink="/orders" routerLinkActive="active" class="nav-item">
+            My Orders
+          </a>
+        }
+
+        <!-- Inventory: Admin only -->
         @if (authService.isAdmin()) {
           <a routerLink="/inventory" routerLinkActive="active" class="nav-item admin-tag">
             Inventory
           </a>
         }
-      }
-    </nav>
+      </nav>
+    }
 
     <div class="user-actions">
       @if (authService.currentUser(); as user) {
         <div class="user-pill">
           <span class="user-name">{{ user.fullName }}</span>
-          <span class="role-chip" [class.admin]="user.role === 'Admin'">{{ user.role }}</span>
+          <span
+            class="role-chip"
+            [class.admin]="user.role === 'Admin'"
+            [class.manager]="user.role === 'BrandManager' || user.role === 'Brand Manager'"
+          >
+            {{ user.role }}
+          </span>
         </div>
         <a routerLink="/profile" routerLinkActive="active" class="btn btn-secondary btn-sm">
           Profile
@@ -49,10 +64,10 @@
           Logout
         </button>
       } @else {
-        <a routerLink="/login" class="btn btn-secondary btn-sm">
+        <a routerLink="/login" routerLinkActive="active" class="btn btn-secondary btn-sm">
           Sign In
         </a>
-        <a routerLink="/register" class="btn btn-primary btn-sm">
+        <a routerLink="/register" routerLinkActive="active" class="btn btn-primary btn-sm">
           Register
         </a>
       }

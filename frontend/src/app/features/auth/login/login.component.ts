@@ -91,10 +91,11 @@ export class LoginComponent implements OnInit {
       next: () => {
         this.isSubmitting.set(false);
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        const defaultRoute = this.authService.getDefaultRouteForRole();
         const safeTarget =
           returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')
             ? returnUrl
-            : '/products';
+            : defaultRoute;
         void this.router.navigateByUrl(safeTarget);
       },
       error: (err: unknown) => {

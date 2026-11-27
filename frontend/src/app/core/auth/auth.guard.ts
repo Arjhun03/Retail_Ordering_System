@@ -24,27 +24,25 @@ export const guestGuard: CanActivateFn = () => {
     return true;
   }
 
-  return router.createUrlTree(['/products']);
+  return router.createUrlTree([authService.getDefaultRouteForRole()]);
 };
 
 export function roleGuard(allowedRoles: UserRole | readonly UserRole[]): CanActivateFn {
   const roles: readonly UserRole[] = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
-  return (_route, state) => {
+  return (_route, _state) => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
     const user = authService.currentUser();
     if (!user) {
-      return router.createUrlTree(['/login'], {
-        queryParams: { returnUrl: state.url },
-      });
+      return router.createUrlTree(['/login']);
     }
 
     if (roles.includes(user.role)) {
       return true;
     }
 
-    return router.createUrlTree(['/profile']);
+    return router.createUrlTree([authService.getDefaultRouteForRole()]);
   };
 }

@@ -29,6 +29,25 @@ export class AuthService {
 
   readonly isLoggedIn = computed<boolean>(() => this.currentUser() !== null);
   readonly isAdmin = computed<boolean>(() => this.currentUser()?.role === 'Admin');
+  readonly isBrandManager = computed<boolean>(() => {
+    const role = this.currentUser()?.role;
+    return role === 'BrandManager' || role === 'Brand Manager';
+  });
+  readonly isCustomer = computed<boolean>(() => this.currentUser()?.role === 'Customer');
+
+  getDefaultRouteForRole(): string {
+    const role = this.currentUser()?.role;
+    if (role === 'Admin') {
+      return '/inventory';
+    }
+    if (role === 'BrandManager' || role === 'Brand Manager') {
+      return '/catalog/brands';
+    }
+    if (role === 'Customer') {
+      return '/catalog/products';
+    }
+    return '/login';
+  }
 
   get token(): string | null {
     const session = this.sessionSignal();

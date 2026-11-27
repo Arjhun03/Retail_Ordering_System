@@ -124,6 +124,11 @@
   color: var(--accent);
 }
 
+.role-chip.manager {
+  background: #ecfdf5;
+  color: #047857;
+}
+
 @media (max-width: 768px) {
   .header-inner {
     height: auto;

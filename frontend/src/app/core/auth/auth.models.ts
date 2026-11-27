@@ -1,4 +1,4 @@
-export type UserRole = 'Customer' | 'Admin';
+export type UserRole = 'Customer' | 'Admin' | 'BrandManager' | 'Brand Manager';
 
 export interface RegisterRequest {
   fullName: string;
