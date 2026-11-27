@@ -1,55 +1,60 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { API_BASE_URL } from '../auth/auth.constants';
-import { AuthService } from '../auth/auth.service';
-import { AddCartItemRequest, CartResponse, UpdateCartItemRequest } from '../models/cart.models';
+import { AddCartItemRequest, Cart } from '../models/cart.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class CartService {
-  private readonly http = inject(HttpClient);
-  private readonly authService = inject(AuthService);
-
-  readonly cart = signal<CartResponse | null>(null);
+  private readonly apiUrl = `${API_BASE_URL}/cart`;
+  readonly cart = signal<Cart | null>(null);
 
   readonly itemCount = computed<number>(() => {
-    const current = this.cart();
-    if (!current || !current.items) return 0;
-    return current.items.reduce((sum, item) => sum + item.quantity, 0);
+    const c = this.cart();
+    if (!c || !c.items) return 0;
+    return c.items.reduce((acc, item) => acc + item.quantity, 0);
   });
 
   readonly totalAmount = computed<number>(() => {
     return this.cart()?.totalAmount ?? 0;
   });
 
-  loadCart(): Observable<CartResponse> {
-    return this.http.get<CartResponse>(`${API_BASE_URL}/cart`).pipe(
+  constructor(private http: HttpClient) {}
+
+  getCart(): Observable<Cart> {
+    return this.http.get<Cart>(this.apiUrl).pipe(
       tap((cart) => this.cart.set(cart)),
     );
   }
 
-  addItem(packagingId: number, quantity: number = 1): Observable<CartResponse> {
-    const body: AddCartItemRequest = { packagingId, quantity };
-    return this.http.post<CartResponse>(`${API_BASE_URL}/cart/items`, body).pipe(
+  loadCart(): Observable<Cart> {
+    return this.getCart();
+  }
+
+  addItem(request: AddCartItemRequest): Observable<Cart> {
+    return this.http.post<Cart>(`${this.apiUrl}/items`, request).pipe(
       tap((cart) => this.cart.set(cart)),
     );
   }
 
-  updateItem(packagingId: number, quantity: number): Observable<CartResponse> {
-    const body: UpdateCartItemRequest = { quantity };
-    return this.http.put<CartResponse>(`${API_BASE_URL}/cart/items/${packagingId}`, body).pipe(
-      tap((cart) => this.cart.set(cart)),
-    );
+  updateItem(packagingIdOrCartItemId: number, quantity: number): Observable<Cart> {
+    return this.http
+      .put<Cart>(`${this.apiUrl}/items/${packagingIdOrCartItemId}`, {
+        quantity,
+      })
+      .pipe(tap((cart) => this.cart.set(cart)));
   }
 
-  removeItem(packagingId: number): Observable<CartResponse> {
-    return this.http.delete<CartResponse>(`${API_BASE_URL}/cart/items/${packagingId}`).pipe(
-      tap((cart) => this.cart.set(cart)),
-    );
+  removeItem(packagingIdOrCartItemId: number): Observable<Cart> {
+    return this.http
+      .delete<Cart>(`${this.apiUrl}/items/${packagingIdOrCartItemId}`)
+      .pipe(tap((cart) => this.cart.set(cart)));
   }
 
   clearCart(): Observable<void> {
-    return this.http.delete<void>(`${API_BASE_URL}/cart`).pipe(
+    return this.http.delete<void>(this.apiUrl).pipe(
       tap(() => this.cart.set(null)),
     );
   }

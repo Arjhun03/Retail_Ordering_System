@@ -1,11 +1,26 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'products', pathMatch: 'full' },
+  { path: '', redirectTo: 'catalog/products', pathMatch: 'full' },
   {
-    path: 'products',
+    path: 'catalog',
     loadChildren: () =>
       import('./features/catalog/catalog.routes').then((m) => m.CATALOG_ROUTES),
+  },
+  {
+    path: 'products',
+    redirectTo: 'catalog/products',
+    pathMatch: 'full',
+  },
+  {
+    path: 'categories',
+    redirectTo: 'catalog/categories',
+    pathMatch: 'full',
+  },
+  {
+    path: 'brands',
+    redirectTo: 'catalog/brands',
+    pathMatch: 'full',
   },
   {
     path: 'cart',
@@ -32,5 +47,5 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
-  { path: '**', redirectTo: 'products' },
+  { path: '**', redirectTo: 'catalog/products' },
 ];

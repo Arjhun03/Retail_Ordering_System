@@ -1,13 +1,19 @@
 <header class="app-header">
   <div class="container header-inner">
-    <a routerLink="/products" class="brand-link">
+    <a routerLink="/catalog/products" class="brand-link">
       <span class="brand-icon">🍕</span>
       <span class="brand-text">Fresh<span class="brand-accent">Market</span></span>
     </a>
 
     <nav class="nav-links">
-      <a routerLink="/products" routerLinkActive="active" class="nav-item">
-        Catalog
+      <a routerLink="/catalog/products" routerLinkActive="active" class="nav-item">
+        Products
+      </a>
+      <a routerLink="/catalog/categories" routerLinkActive="active" class="nav-item">
+        Categories
+      </a>
+      <a routerLink="/catalog/brands" routerLinkActive="active" class="nav-item">
+        Brands
       </a>
 
       @if (authService.isLoggedIn()) {

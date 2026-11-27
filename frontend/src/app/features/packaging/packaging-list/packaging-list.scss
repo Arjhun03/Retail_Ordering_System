@@ -1,0 +1,106 @@
+.packaging-section {
+  padding: 20px;
+}
+
+.packaging-section h2 {
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.packaging-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.packaging-card {
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.packaging-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.packaging-card h3 {
+  margin: 0 0 10px;
+  color: #222;
+}
+
+.product-name {
+  color: #777;
+  font-size: 14px;
+}
+
+.unit {
+  color: #555;
+  font-size: 14px;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 12px 0;
+  color: #222;
+}
+
+.stock {
+  font-size: 13px;
+  color: #666;
+}
+
+.packaging-card button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 11px;
+  border: none;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.packaging-card button:hover:not(:disabled) {
+  background: #444;
+}
+
+.packaging-card button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.loading {
+  color: #555;
+}
+
+.error {
+  color: #c62828;
+}
+
+.empty-message {
+  color: #777;
+  padding: 20px 0;
+}
+
+@media (max-width: 600px) {
+  .packaging-section {
+    padding: 12px;
+  }
+
+  .packaging-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .success {
+  color: #16803d;
+  background: #e8f5e9;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+}

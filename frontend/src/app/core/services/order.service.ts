@@ -1,27 +1,40 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../auth/auth.constants';
 import {
-  OrderDetailResponse,
-  OrderListItemResponse,
+  OrderDetail,
+  OrderListItem,
   PlaceOrderRequest,
-} from '../models/order.models';
+} from '../models/order.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class OrderService {
-  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${API_BASE_URL}/orders`;
 
-  placeOrder(deliveryAddress: string): Observable<OrderDetailResponse> {
-    const body: PlaceOrderRequest = { deliveryAddress };
-    return this.http.post<OrderDetailResponse>(`${API_BASE_URL}/orders`, body);
+  constructor(private http: HttpClient) {}
+
+  placeOrder(request: PlaceOrderRequest | string): Observable<OrderDetail> {
+    const body: PlaceOrderRequest =
+      typeof request === 'string' ? { deliveryAddress: request } : request;
+    return this.http.post<OrderDetail>(this.apiUrl, body);
   }
 
-  getOrders(): Observable<OrderListItemResponse[]> {
-    return this.http.get<OrderListItemResponse[]>(`${API_BASE_URL}/orders`);
+  getOrderById(orderId: number): Observable<OrderDetail> {
+    return this.http.get<OrderDetail>(`${this.apiUrl}/${orderId}`);
   }
 
-  getOrder(id: number): Observable<OrderDetailResponse> {
-    return this.http.get<OrderDetailResponse>(`${API_BASE_URL}/orders/${id}`);
+  getOrder(orderId: number): Observable<OrderDetail> {
+    return this.getOrderById(orderId);
+  }
+
+  getMyOrders(page = 1, pageSize = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}`);
+  }
+
+  getOrders(): Observable<OrderListItem[]> {
+    return this.http.get<OrderListItem[]>(this.apiUrl);
   }
 }
