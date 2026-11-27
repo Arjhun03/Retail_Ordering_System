@@ -25,7 +25,16 @@ export class CartService {
 
   getCart(): Observable<Cart> {
     return this.http.get<Cart>(this.apiUrl).pipe(
-      tap((cart) => this.cart.set(cart)),
+      tap((cart) => {
+        if (cart) {
+          this.cart.set({
+            ...cart,
+            items: cart.items ?? [],
+          });
+        } else {
+          this.cart.set(null);
+        }
+      }),
     );
   }
 
@@ -35,7 +44,14 @@ export class CartService {
 
   addItem(request: AddCartItemRequest): Observable<Cart> {
     return this.http.post<Cart>(`${this.apiUrl}/items`, request).pipe(
-      tap((cart) => this.cart.set(cart)),
+      tap((cart) => {
+        if (cart) {
+          this.cart.set({
+            ...cart,
+            items: cart.items ?? [],
+          });
+        }
+      }),
     );
   }
 
@@ -44,13 +60,31 @@ export class CartService {
       .put<Cart>(`${this.apiUrl}/items/${packagingIdOrCartItemId}`, {
         quantity,
       })
-      .pipe(tap((cart) => this.cart.set(cart)));
+      .pipe(
+        tap((cart) => {
+          if (cart) {
+            this.cart.set({
+              ...cart,
+              items: cart.items ?? [],
+            });
+          }
+        }),
+      );
   }
 
   removeItem(packagingIdOrCartItemId: number): Observable<Cart> {
     return this.http
       .delete<Cart>(`${this.apiUrl}/items/${packagingIdOrCartItemId}`)
-      .pipe(tap((cart) => this.cart.set(cart)));
+      .pipe(
+        tap((cart) => {
+          if (cart) {
+            this.cart.set({
+              ...cart,
+              items: cart.items ?? [],
+            });
+          }
+        }),
+      );
   }
 
   clearCart(): Observable<void> {

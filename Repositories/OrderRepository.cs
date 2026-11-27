@@ -108,7 +108,7 @@ public class OrderRepository : IOrderRepository
                 var orderItem = new OrderItem
                 {
                     PackagingId = cartItem.PackagingId,
-                    ProductName = packaging.Product.ProductName,
+                    ProductName = packaging.Product?.ProductName ?? packaging.PackagingName,
                     PackagingName = packaging.PackagingName,
                     Quantity = cartItem.Quantity,
                     UnitPrice = unitPrice,

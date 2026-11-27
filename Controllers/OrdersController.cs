@@ -8,7 +8,7 @@ namespace Retail_Ordering.Api.Controllers;
 
 [ApiController]
 [Route("api/orders")]
-[Authorize(Roles = "Customer,Admin")]
+[Authorize(Roles = "Customer,customer,Admin,admin")]
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
@@ -72,7 +72,7 @@ public class OrdersController : ControllerBase
     // GET: api/orders?page=1&pageSize=10
     // Customer's order history
     [HttpGet]
-    [Authorize(Roles = "Customer")]
+    [Authorize(Roles = "Customer,customer,Admin,admin")]
     public async Task<IActionResult> GetMyOrders(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10,

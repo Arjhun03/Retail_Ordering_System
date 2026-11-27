@@ -27,7 +27,26 @@ public class CartRepository : ICartRepository
                 ct);
 
         if (cart != null)
+        {
+            foreach (var item in cart.Items)
+            {
+                if (item.Packaging == null)
+                {
+                    await _context.Entry(item)
+                        .Reference(i => i.Packaging)
+                        .Query()
+                        .Include(p => p.Product)
+                        .LoadAsync(ct);
+                }
+                else if (item.Packaging.Product == null)
+                {
+                    await _context.Entry(item.Packaging)
+                        .Reference(p => p.Product)
+                        .LoadAsync(ct);
+                }
+            }
             return cart;
+        }
 
         cart = new Cart
         {

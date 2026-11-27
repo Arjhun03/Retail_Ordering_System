@@ -39,7 +39,18 @@ export function roleGuard(allowedRoles: UserRole | readonly UserRole[]): CanActi
       return router.createUrlTree(['/login']);
     }
 
-    if (roles.includes(user.role)) {
+    const userRole = user.role?.toLowerCase().replace(/[\s_-]+/g, '') ?? '';
+    const isAllowed = roles.some((r) => {
+      const allowed = r.toLowerCase().replace(/[\s_-]+/g, '');
+      return allowed === userRole;
+    });
+
+    if (isAllowed) {
+      return true;
+    }
+
+    // Special case for Customer: anyone logged in who is neither Admin nor BrandManager is a Customer
+    if (roles.some((r) => r.toLowerCase() === 'customer') && authService.isCustomer()) {
       return true;
     }
 

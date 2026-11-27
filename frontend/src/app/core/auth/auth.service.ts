@@ -30,22 +30,33 @@ export class AuthService {
   });
 
   readonly isLoggedIn = computed<boolean>(() => this.currentUser() !== null);
-  readonly isAdmin = computed<boolean>(() => this.currentUser()?.role === 'Admin');
+  readonly isAdmin = computed<boolean>(() => {
+    const role = this.currentUser()?.role;
+    return role ? role.toLowerCase() === 'admin' : false;
+  });
   readonly isBrandManager = computed<boolean>(() => {
     const role = this.currentUser()?.role;
-    return role === 'BrandManager' || role === 'Brand Manager';
+    if (!role) return false;
+    const r = role.toLowerCase().replace(/[\s_-]+/g, '');
+    return r === 'brandmanager';
   });
-  readonly isCustomer = computed<boolean>(() => this.currentUser()?.role === 'Customer');
+  readonly isCustomer = computed<boolean>(() => {
+    if (!this.isLoggedIn()) return false;
+    const role = this.currentUser()?.role;
+    if (!role) return true;
+    const r = role.toLowerCase().replace(/[\s_-]+/g, '');
+    return r === 'customer' || (!this.isAdmin() && !this.isBrandManager());
+  });
 
   getDefaultRouteForRole(): string {
-    const role = this.currentUser()?.role;
-    if (role === 'Admin') {
+    const role = this.currentUser()?.role?.toLowerCase().replace(/[\s_-]+/g, '');
+    if (role === 'admin') {
       return '/inventory';
     }
-    if (role === 'BrandManager' || role === 'Brand Manager') {
+    if (role === 'brandmanager') {
       return '/catalog/products';
     }
-    if (role === 'Customer') {
+    if (role === 'customer') {
       return '/catalog/products';
     }
     return '/login';
@@ -160,8 +171,7 @@ export class AuthService {
         !parsed.user ||
         typeof parsed.user.userId !== 'number' ||
         typeof parsed.user.email !== 'string' ||
-        typeof parsed.user.fullName !== 'string' ||
-        (parsed.user.role !== 'Customer' && parsed.user.role !== 'Admin')
+        typeof parsed.user.fullName !== 'string'
       ) {
         localStorage.removeItem(AUTH_STORAGE_KEY);
         return null;

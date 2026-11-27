@@ -98,6 +98,7 @@ public class CartService : ICartService
             {
                 CartId = cart.CartId,
                 PackagingId = packaging.PackagingId,
+                Packaging = packaging,
                 Quantity = request.Quantity,
                 UnitPrice = packaging.Price
             };
@@ -219,12 +220,13 @@ public class CartService : ICartService
     private static CartResponse MapToResponse(Cart cart)
     {
         var items = cart.Items
+            .Where(item => item != null)
             .Select(item => new CartItemResponse(
                 item.CartItemId,
                 item.PackagingId,
-                item.Packaging.Product.ProductName,
-                item.Packaging.PackagingName,
-                item.Packaging.Unit,
+                item.Packaging?.Product?.ProductName ?? "Product",
+                item.Packaging?.PackagingName ?? "Standard",
+                item.Packaging?.Unit ?? "1 Unit",
                 item.Quantity,
                 item.UnitPrice,
                 Math.Round(

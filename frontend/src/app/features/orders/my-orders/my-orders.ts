@@ -32,8 +32,11 @@ export class MyOrdersComponent implements OnInit {
 
     this.orderService.getMyOrders(this.page, this.pageSize).subscribe({
       next: (response) => {
-        this.orders = response.items ?? response.data ?? [];
-        this.totalPages = response.totalPages ?? 1;
+        const list = Array.isArray(response)
+          ? response
+          : (response?.items ?? response?.data ?? []);
+        this.orders = list;
+        this.totalPages = response?.totalPages ?? 1;
         this.loading = false;
       },
       error: (error) => {

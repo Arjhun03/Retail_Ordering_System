@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { CartService } from '../../core/services/cart.service';
@@ -11,19 +11,22 @@ import { CartService } from '../../core/services/cart.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
   readonly authService = inject(AuthService);
   readonly cartService = inject(CartService);
   private readonly router = inject(Router);
 
-  ngOnInit(): void {
-    if (this.authService.isLoggedIn()) {
-      this.cartService.loadCart().subscribe({
-        error: () => {
-          // cart might be empty or new, safe to ignore
-        },
-      });
-    }
+  constructor() {
+    effect(() => {
+      // Whenever the user logs in as a Customer, immediately fetch active cart
+      if (this.authService.isLoggedIn() && this.authService.isCustomer()) {
+        this.cartService.loadCart().subscribe({
+          error: () => {
+            // Cart might be empty, safe to ignore
+          },
+        });
+      }
+    });
   }
 
   onLogout(): void {
