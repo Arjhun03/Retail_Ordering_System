@@ -40,7 +40,7 @@ public class JwtHelper
         var nowUtc = DateTime.UtcNow;
         var expiresAtUtc = nowUtc.AddMinutes(_accessTokenMinutes);
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
@@ -48,6 +48,11 @@ public class JwtHelper
             new Claim(ClaimTypes.Role, user.Role.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+
+        if (user.BrandId.HasValue)
+        {
+            claims.Add(new Claim("BrandId", user.BrandId.Value.ToString()));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_signingKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

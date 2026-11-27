@@ -39,6 +39,14 @@ export class CatalogService {
     return this.http.get<BrandResponse>(`${this.brandsUrl}/${id}`);
   }
 
+  getMyBrand(): Observable<BrandResponse> {
+    return this.http.get<BrandResponse>(`${this.brandsUrl}/my-brand`);
+  }
+
+  updateMyBrand(request: UpdateBrandRequest): Observable<BrandResponse> {
+    return this.http.put<BrandResponse>(`${this.brandsUrl}/my-brand`, request);
+  }
+
   createBrand(request: CreateBrandRequest): Observable<BrandResponse> {
     return this.http.post<BrandResponse>(this.brandsUrl, request);
   }
@@ -121,5 +129,52 @@ export class CatalogService {
 
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.productsUrl}/${id}`);
+  }
+
+  // My Brand Product APIs (Server-enforced brand access for Brand Manager)
+  getMyBrandProducts(
+    filters: ProductQuery = {}
+  ): Observable<PagedResponse<ProductListItemResponse>> {
+    let params = new HttpParams()
+      .set('page', filters.page ?? 1)
+      .set('pageSize', filters.pageSize ?? 10);
+
+    if (filters.categoryId !== undefined) {
+      params = params.set('categoryId', filters.categoryId);
+    }
+
+    if (filters.search?.trim()) {
+      params = params.set('search', filters.search.trim());
+    }
+
+    return this.http.get<PagedResponse<ProductListItemResponse>>(
+      `${this.productsUrl}/my-brand`,
+      { params }
+    );
+  }
+
+  createMyBrandProduct(request: {
+    categoryId: number;
+    productName: string;
+    description?: string | null;
+    imageUrl?: string | null;
+  }): Observable<ProductDetailResponse> {
+    return this.http.post<ProductDetailResponse>(`${this.productsUrl}/my-brand`, request);
+  }
+
+  updateMyBrandProduct(
+    id: number,
+    request: {
+      categoryId: number;
+      productName: string;
+      description?: string | null;
+      imageUrl?: string | null;
+      isActive: boolean;
+    }
+  ): Observable<ProductDetailResponse> {
+    return this.http.put<ProductDetailResponse>(
+      `${this.productsUrl}/my-brand/${id}`,
+      request
+    );
   }
 }

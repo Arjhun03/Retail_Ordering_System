@@ -87,8 +87,8 @@ public class AuthService : IAuthService
         string.IsNullOrWhiteSpace(phone) ? null : phone.Trim();
 
     private static UserProfileResponse MapToProfileResponse(User user) =>
-        new(user.UserId, user.FullName, user.Email, user.Phone, user.Role.ToString(), user.CreatedAt);
+        new(user.UserId, user.FullName, user.Email, user.Phone, user.Role.ToString(), user.CreatedAt, user.BrandId, user.Brand?.BrandName);
 
     private static UserSummaryDto MapToSummaryDto(User user) =>
-        new(user.UserId, user.FullName, user.Email, user.Role.ToString());
+        new(user.UserId, user.FullName, user.Email, user.Role.ToString(), user.BrandId, user.Brand?.BrandName);
 }

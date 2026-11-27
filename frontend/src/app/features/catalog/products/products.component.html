@@ -4,7 +4,11 @@
   <div class="page-header">
     <div>
       <h1>Product Management</h1>
-      <p>View, create and manage products.</p>
+      @if (authService.isBrandManager()) {
+        <p>Managing products for brand: <strong>{{ authService.currentUser()?.brandName || 'My Brand' }}</strong></p>
+      } @else {
+        <p>View, create and manage products.</p>
+      }
     </div>
     <span class="total-count">{{ totalCount }} Products</span>
   </div>
@@ -17,45 +21,56 @@
     <div class="alert success">{{ successMessage() }}</div>
   }
 
-  <section class="form-card">
-    <h2>{{ editingId !== null ? 'Edit Product' : 'Add New Product' }}</h2>
+  @if (authService.isAdmin() || authService.isBrandManager()) {
+    <section class="form-card">
+      <h2>{{ editingId !== null ? 'Edit Product' : 'Add New Product' }}</h2>
 
-    <form (ngSubmit)="saveProduct()">
+      <form (ngSubmit)="saveProduct()">
 
-      <div class="form-group">
-        <label for="productName">Product Name *</label>
-        <input
-          id="productName"
-          name="productName"
-          type="text"
-          [(ngModel)]="productName"
-          maxlength="150"
-          placeholder="Enter product name"
-          required
-        />
-      </div>
+        <div class="form-group">
+          <label for="productName">Product Name *</label>
+          <input
+            id="productName"
+            name="productName"
+            type="text"
+            [(ngModel)]="productName"
+            maxlength="150"
+            placeholder="Enter product name"
+            required
+          />
+        </div>
 
-      <div class="form-group">
-        <label for="brand">Brand *</label>
-        <select id="brand" name="brand" [(ngModel)]="brandId" required>
-          <option [ngValue]="null">Select Brand</option>
-          @for (brand of brands(); track brand.brandId) {
-            <option [ngValue]="brand.brandId">{{ brand.brandName }}</option>
-          }
-        </select>
-      </div>
+        @if (authService.isBrandManager()) {
+          <div class="form-group brand-locked-info">
+            <label>Brand</label>
+            <div class="locked-brand-pill">
+              🏢 <strong>{{ authService.currentUser()?.brandName || 'My Brand' }}</strong>
+              <span class="subtext">(Automatically attached server-side)</span>
+            </div>
+          </div>
+        } @else {
+          <div class="form-group">
+            <label for="brand">Brand *</label>
+            <select id="brand" name="brand" [(ngModel)]="brandId" required>
+              <option [ngValue]="null">Select Brand</option>
+              @for (brand of brands(); track brand.brandId) {
+                <option [ngValue]="brand.brandId">{{ brand.brandName }}</option>
+              }
+            </select>
+          </div>
+        }
 
-      <div class="form-group">
-        <label for="category">Category *</label>
-        <select id="category" name="category" [(ngModel)]="categoryId" required>
-          <option [ngValue]="null">Select Category</option>
-          @for (category of categories(); track category.categoryId) {
-            <option [ngValue]="category.categoryId">
-              {{ category.categoryName }}
-            </option>
-          }
-        </select>
-      </div>
+        <div class="form-group">
+          <label for="category">Category *</label>
+          <select id="category" name="category" [(ngModel)]="categoryId" required>
+            <option [ngValue]="null">Select Category</option>
+            @for (category of categories(); track category.categoryId) {
+              <option [ngValue]="category.categoryId">
+                {{ category.categoryName }}
+              </option>
+            }
+          </select>
+        </div>
 
       <div class="form-group">
         <label for="description">Description</label>
@@ -93,6 +108,7 @@
 
     </form>
   </section>
+  }
 
   <section class="filter-card">
     <h2>Search and Filter Products</h2>
@@ -106,12 +122,14 @@
         (keyup.enter)="searchProducts()"
       />
 
-      <select name="filterBrand" [(ngModel)]="selectedBrandId">
-        <option [ngValue]="null">All Brands</option>
-        @for (brand of brands(); track brand.brandId) {
-          <option [ngValue]="brand.brandId">{{ brand.brandName }}</option>
-        }
-      </select>
+      @if (!authService.isBrandManager()) {
+        <select name="filterBrand" [(ngModel)]="selectedBrandId">
+          <option [ngValue]="null">All Brands</option>
+          @for (brand of brands(); track brand.brandId) {
+            <option [ngValue]="brand.brandId">{{ brand.brandName }}</option>
+          }
+        </select>
+      }
 
       <select name="filterCategory" [(ngModel)]="selectedCategoryId">
         <option [ngValue]="null">All Categories</option>
@@ -145,7 +163,9 @@
               <th>Category</th>
               <th>Description</th>
               <th>Status</th>
-              <th>Actions</th>
+              @if (authService.isAdmin() || authService.isBrandManager()) {
+                <th>Actions</th>
+              }
             </tr>
           </thead>
 
@@ -165,25 +185,27 @@
                     {{ product.isActive ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
-                <td class="actions">
-                  <button
-                    type="button"
-                    class="edit-btn"
-                    (click)="editProduct(product)"
-                  >
-                    Edit
-                  </button>
-
-                  @if (product.isActive) {
+                @if (authService.isAdmin() || authService.isBrandManager()) {
+                  <td class="actions">
                     <button
                       type="button"
-                      class="delete-btn"
-                      (click)="deleteProduct(product)"
+                      class="edit-btn"
+                      (click)="editProduct(product)"
                     >
-                      Deactivate
+                      Edit
                     </button>
-                  }
-                </td>
+
+                    @if (product.isActive) {
+                      <button
+                        type="button"
+                        class="delete-btn"
+                        (click)="deleteProduct(product)"
+                      >
+                        Deactivate
+                      </button>
+                    }
+                  </td>
+                }
               </tr>
             }
           </tbody>

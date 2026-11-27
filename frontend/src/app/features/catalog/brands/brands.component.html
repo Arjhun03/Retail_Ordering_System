@@ -2,8 +2,8 @@
 <div class="brands-page">
   <div class="page-header">
     <div>
-      <h1>Brand Management</h1>
-      <p>Create and manage product brands.</p>
+      <h1>{{ authService.isBrandManager() ? 'My Brand Profile' : 'Brand Management' }}</h1>
+      <p>{{ authService.isBrandManager() ? 'View and update your brand profile details.' : 'Create and manage product brands.' }}</p>
     </div>
     <span class="total-count">{{ brands().length }} Brands</span>
   </div>
@@ -17,7 +17,7 @@
   }
 
   <section class="form-card">
-    <h2>{{ editingId !== null ? 'Edit Brand' : 'Add New Brand' }}</h2>
+    <h2>{{ authService.isBrandManager() ? 'Edit Brand Details' : editingId !== null ? 'Edit Brand' : 'Add New Brand' }}</h2>
 
     <form (ngSubmit)="saveBrand()">
       <div class="form-group">
@@ -94,7 +94,7 @@
                   <button type="button" class="edit-btn" (click)="editBrand(brand)">
                     Edit
                   </button>
-                  @if (brand.isActive) {
+                  @if (authService.isAdmin() && brand.isActive) {
                     <button type="button" class="delete-btn" (click)="deleteBrand(brand)">
                       Deactivate
                     </button>

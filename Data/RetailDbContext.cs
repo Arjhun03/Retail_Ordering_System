@@ -34,6 +34,11 @@ public class RetailDbContext(DbContextOptions<RetailDbContext> options) : DbCont
             entity.Property(e => e.Role).IsRequired().HasConversion<string>();
             entity.Property(e => e.CreatedAt).IsRequired();
 
+            entity.HasOne(e => e.Brand)
+                  .WithMany()
+                  .HasForeignKey(e => e.BrandId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
             entity.HasMany(e => e.Carts)
                   .WithOne(c => c.User)
                   .HasForeignKey(c => c.UserId)

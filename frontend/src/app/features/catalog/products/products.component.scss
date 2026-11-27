@@ -199,6 +199,26 @@ table {
   }
 }
 
+.brand-locked-info {
+  .locked-brand-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+
+    .subtext {
+      color: #60a5fa;
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
+}
+
 @media (max-width: 850px) {
   .filters {
     grid-template-columns: 1fr 1fr;

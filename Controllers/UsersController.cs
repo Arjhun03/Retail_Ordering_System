@@ -49,6 +49,39 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("brand-managers")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(IReadOnlyList<BrandManagerResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<BrandManagerResponse>>> GetBrandManagers(CancellationToken ct)
+    {
+        var managers = await _userService.GetBrandManagersAsync(ct);
+        return Ok(managers);
+    }
+
+    [HttpPost("brand-managers")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(BrandManagerResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<BrandManagerResponse>> CreateBrandManager(
+        [FromBody] CreateBrandManagerRequest request,
+        CancellationToken ct)
+    {
+        try
+        {
+            var manager = await _userService.CreateBrandManagerAsync(request, ct);
+            return StatusCode(StatusCodes.Status201Created, manager);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+    }
+
     private bool TryGetCurrentUserId(out int userId)
     {
         var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);

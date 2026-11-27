@@ -3,6 +3,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { AuthService } from '../../../core/auth/auth.service';
 import { CatalogService } from '../services/catalog.service';
 import {
   BrandResponse,
@@ -19,6 +20,7 @@ import {
 })
 export class BrandsComponent implements OnInit {
   private readonly catalogService = inject(CatalogService);
+  readonly authService = inject(AuthService);
 
   brands = signal<BrandResponse[]>([]);
   loading = signal(false);
@@ -37,6 +39,20 @@ export class BrandsComponent implements OnInit {
   loadBrands(): void {
     this.loading.set(true);
     this.errorMessage.set('');
+
+    if (this.authService.isBrandManager()) {
+      this.catalogService.getMyBrand().subscribe({
+        next: (brand) => {
+          this.brands.set([brand]);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.errorMessage.set('Unable to load your brand details. Please try again.');
+          this.loading.set(false);
+        }
+      });
+      return;
+    }
 
     this.catalogService.getBrands().subscribe({
       next: (data) => {
@@ -71,6 +87,25 @@ export class BrandsComponent implements OnInit {
     this.saving.set(true);
     this.errorMessage.set('');
     this.successMessage.set('');
+
+    if (this.authService.isBrandManager()) {
+      const request: UpdateBrandRequest = {
+        brandName: name,
+        description: this.description.trim() || null,
+        isActive: true
+      };
+
+      this.catalogService.updateMyBrand(request).subscribe({
+        next: () => {
+          this.successMessage.set('Brand details updated successfully.');
+          this.resetForm();
+          this.loadBrands();
+          this.saving.set(false);
+        },
+        error: (error) => this.handleError(error)
+      });
+      return;
+    }
 
     if (this.editingId !== null) {
       const request: UpdateBrandRequest = {

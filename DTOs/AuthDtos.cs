@@ -16,7 +16,9 @@ public sealed record UserSummaryDto(
     int UserId,
     string FullName,
     string Email,
-    string Role);
+    string Role,
+    int? BrandId = null,
+    string? BrandName = null);
 
 public sealed record AuthResponse(
     string Token,

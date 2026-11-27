@@ -13,12 +13,12 @@ public class UserRepository : IUserRepository
 
     public Task<User?> GetByIdAsync(int userId, CancellationToken ct = default)
     {
-        return _db.Users.FirstOrDefaultAsync(u => u.UserId == userId, ct);
+        return _db.Users.Include(u => u.Brand).FirstOrDefaultAsync(u => u.UserId == userId, ct);
     }
 
     public Task<User?> GetByEmailAsync(string normalizedEmail, CancellationToken ct = default)
     {
-        return _db.Users.FirstOrDefaultAsync(u => u.Email == normalizedEmail, ct);
+        return _db.Users.Include(u => u.Brand).FirstOrDefaultAsync(u => u.Email == normalizedEmail, ct);
     }
 
     public Task<bool> EmailExistsAsync(string normalizedEmail, CancellationToken ct = default)
@@ -41,5 +41,15 @@ public class UserRepository : IUserRepository
         }
 
         await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<User>> GetBrandManagersAsync(CancellationToken ct = default)
+    {
+        return await _db.Users
+            .AsNoTracking()
+            .Include(u => u.Brand)
+            .Where(u => u.Role == UserRole.BrandManager)
+            .OrderByDescending(u => u.CreatedAt)
+            .ToListAsync(ct);
     }
 }

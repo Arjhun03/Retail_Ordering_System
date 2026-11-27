@@ -1,4 +1,5 @@
 
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Retail_Ordering.Api.DTOs;
@@ -11,10 +12,62 @@ namespace Retail_Ordering.Api.Controllers;
 public class BrandsController : ControllerBase
 {
     private readonly IBrandService _brandService;
+    private readonly IUserRepository _userRepository;
 
-    public BrandsController(IBrandService brandService)
+    public BrandsController(IBrandService brandService, IUserRepository userRepository)
     {
         _brandService = brandService;
+        _userRepository = userRepository;
+    }
+
+    [HttpGet("my-brand")]
+    [Authorize(Roles = "BrandManager,Admin")]
+    public async Task<ActionResult<BrandResponse>> GetMyBrand(CancellationToken ct)
+    {
+        if (!TryGetCurrentUserId(out var userId))
+            return Unauthorized();
+
+        var user = await _userRepository.GetByIdAsync(userId, ct);
+        if (user is null || !user.BrandId.HasValue)
+            return Forbid();
+
+        try
+        {
+            var brand = await _brandService.GetByIdAsync(user.BrandId.Value, ct);
+            return Ok(brand);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpPut("my-brand")]
+    [Authorize(Roles = "BrandManager,Admin")]
+    public async Task<ActionResult<BrandResponse>> UpdateMyBrand(
+        [FromBody] UpdateBrandRequest request,
+        CancellationToken ct)
+    {
+        if (!TryGetCurrentUserId(out var userId))
+            return Unauthorized();
+
+        var user = await _userRepository.GetByIdAsync(userId, ct);
+        if (user is null || !user.BrandId.HasValue)
+            return Forbid();
+
+        try
+        {
+            var updated = await _brandService.UpdateAsync(user.BrandId.Value, request, ct);
+            return Ok(updated);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
     [HttpGet]
@@ -99,5 +152,11 @@ public class BrandsController : ControllerBase
         {
             return NotFound(new { message = ex.Message });
         }
+    }
+
+    private bool TryGetCurrentUserId(out int userId)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return int.TryParse(userIdClaim, out userId);
     }
 }

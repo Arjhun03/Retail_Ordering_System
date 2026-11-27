@@ -2,9 +2,11 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { Observable, tap } from 'rxjs';
-import { AUTH_ENDPOINTS, AUTH_STORAGE_KEY } from './auth.constants';
+import { AUTH_ENDPOINTS, AUTH_STORAGE_KEY, API_BASE_URL } from './auth.constants';
 import {
   AuthResponse,
+  BrandManagerResponse,
+  CreateBrandManagerRequest,
   LoginRequest,
   ProblemDetailsError,
   RegisterRequest,
@@ -41,7 +43,7 @@ export class AuthService {
       return '/inventory';
     }
     if (role === 'BrandManager' || role === 'Brand Manager') {
-      return '/catalog/brands';
+      return '/catalog/products';
     }
     if (role === 'Customer') {
       return '/catalog/products';
@@ -93,6 +95,14 @@ export class AuthService {
     return this.http.put<UserProfileResponse>(AUTH_ENDPOINTS.me, req).pipe(
       tap((profile) => this.syncUserFromProfile(profile)),
     );
+  }
+
+  getBrandManagers(): Observable<BrandManagerResponse[]> {
+    return this.http.get<BrandManagerResponse[]>(`${API_BASE_URL}/users/brand-managers`);
+  }
+
+  createBrandManager(req: CreateBrandManagerRequest): Observable<BrandManagerResponse> {
+    return this.http.post<BrandManagerResponse>(`${API_BASE_URL}/users/brand-managers`, req);
   }
 
   private syncUserFromProfile(profile: UserProfileResponse): void {

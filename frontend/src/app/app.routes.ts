@@ -59,7 +59,15 @@ export const routes: Routes = [
       import('./features/inventory/inventory.routes').then((m) => m.INVENTORY_ROUTES),
   },
 
-  // 7. Profile (All authenticated roles)
+  // 7. Admin Brand Managers (Admin only)
+  {
+    path: 'admin',
+    canActivate: [authGuard, roleGuard(['Admin'])],
+    loadChildren: () =>
+      import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+  },
+
+  // 8. Profile (All authenticated roles)
   {
     path: 'profile',
     canActivate: [authGuard],

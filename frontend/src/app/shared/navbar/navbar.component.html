@@ -36,10 +36,13 @@
           </a>
         }
 
-        <!-- Inventory: Admin only -->
+        <!-- Inventory & Admin: Admin only -->
         @if (authService.isAdmin()) {
           <a routerLink="/inventory" routerLinkActive="active" class="nav-item admin-tag">
             Inventory
+          </a>
+          <a routerLink="/admin/brand-managers" routerLinkActive="active" class="nav-item admin-tag">
+            Brand Managers
           </a>
         }
       </nav>

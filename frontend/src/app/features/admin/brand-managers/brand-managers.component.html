@@ -1,0 +1,138 @@
+<div class="managers-page">
+  <div class="page-header">
+    <div>
+      <h1>Brand Managers</h1>
+      <p>Assign and manage brand managers who control their respective brand catalogs.</p>
+    </div>
+    <span class="total-count">{{ brandManagers().length }} Managers</span>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert success">{{ successMessage() }}</div>
+  }
+
+  <!-- Add Brand Manager Form Card -->
+  <section class="form-card">
+    <h2>Add New Brand Manager</h2>
+    <form (ngSubmit)="createManager()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="fullName">Full Name *</label>
+          <input
+            id="fullName"
+            name="fullName"
+            type="text"
+            [(ngModel)]="fullName"
+            placeholder="e.g. John Doe"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [(ngModel)]="email"
+            placeholder="e.g. manager@brand.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            [(ngModel)]="phone"
+            placeholder="e.g. +1234567890"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password (min 8 chars) *</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            [(ngModel)]="password"
+            placeholder="Temporary or initial password"
+            required
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="brandSelect">Assign To Brand *</label>
+          <select id="brandSelect" name="brandSelect" [(ngModel)]="brandId" required>
+            <option [ngValue]="null">-- Select Brand --</option>
+            @for (brand of brands(); track brand.brandId) {
+              <option [ngValue]="brand.brandId">
+                {{ brand.brandName }} (ID: {{ brand.brandId }})
+              </option>
+            }
+          </select>
+          <span class="field-help">This manager will only have access to view and add products for this brand.</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="saving()">
+          {{ saving() ? 'Creating Manager...' : 'Add Brand Manager' }}
+        </button>
+        <button type="button" class="btn btn-outline" (click)="resetForm()">
+          Reset
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Brand Managers List Table Card -->
+  <section class="table-card">
+    <h2>Registered Brand Managers</h2>
+
+    @if (loading()) {
+      <p class="loading">Loading brand managers...</p>
+    } @else if (brandManagers().length === 0) {
+      <p class="empty">No brand managers found. Add one above to delegate brand product management.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Assigned Brand</th>
+              <th>Role</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (manager of brandManagers(); track manager.userId) {
+              <tr>
+                <td>#{{ manager.userId }}</td>
+                <td class="manager-name">{{ manager.fullName }}</td>
+                <td>{{ manager.email }}</td>
+                <td>{{ manager.phone || '—' }}</td>
+                <td>
+                  <span class="brand-badge">{{ manager.brandName || 'Brand #' + manager.brandId }}</span>
+                </td>
+                <td>
+                  <span class="role-badge">BrandManager</span>
+                </td>
+                <td>{{ manager.createdAtUtc | date: 'shortDate' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

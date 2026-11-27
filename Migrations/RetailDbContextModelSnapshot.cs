@@ -327,13 +327,16 @@ namespace Retail_Ordering.Api.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Retail_Ordering.Api.Models.User", b =>
+            modelBuilder.Entity("Retail_Ordering.Api.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+
+                    b.Property<int?>("BrandId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -363,6 +366,8 @@ namespace Retail_Ordering.Api.Migrations
 
                     b.HasKey("UserId");
 
+                    b.HasIndex("BrandId");
+
                     b.HasIndex("Email")
                         .IsUnique();
 
@@ -371,7 +376,7 @@ namespace Retail_Ordering.Api.Migrations
 
             modelBuilder.Entity("Retail_Ordering.Api.Models.Cart", b =>
                 {
-                    b.HasOne("Retail_Ordering.Api.Models.User", "User")
+                    b.HasOne("Retail_Ordering.Api.User", "User")
                         .WithMany("Carts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -412,7 +417,7 @@ namespace Retail_Ordering.Api.Migrations
 
             modelBuilder.Entity("Retail_Ordering.Api.Models.Order", b =>
                 {
-                    b.HasOne("Retail_Ordering.Api.Models.User", "User")
+                    b.HasOne("Retail_Ordering.Api.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -470,6 +475,16 @@ namespace Retail_Ordering.Api.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Retail_Ordering.Api.User", b =>
+                {
+                    b.HasOne("Retail_Ordering.Api.Models.Brand", "Brand")
+                        .WithMany()
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Brand");
+                });
+
             modelBuilder.Entity("Retail_Ordering.Api.Models.Brand", b =>
                 {
                     b.Navigation("Products");
@@ -504,7 +519,7 @@ namespace Retail_Ordering.Api.Migrations
                     b.Navigation("Packagings");
                 });
 
-            modelBuilder.Entity("Retail_Ordering.Api.Models.User", b =>
+            modelBuilder.Entity("Retail_Ordering.Api.User", b =>
                 {
                     b.Navigation("Carts");
 

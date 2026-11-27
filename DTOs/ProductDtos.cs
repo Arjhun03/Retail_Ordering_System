@@ -18,6 +18,40 @@ public sealed record CreateProductRequest(
     string? ImageUrl
 );
 
+public sealed record CreateMyBrandProductRequest(
+    [Required]
+    int CategoryId,
+
+    [Required]
+    [MaxLength(150)]
+    string ProductName,
+
+    [MaxLength(500)]
+    string? Description,
+
+    [MaxLength(500)]
+    [Url]
+    string? ImageUrl
+);
+
+public sealed record UpdateMyBrandProductRequest(
+    [Required]
+    int CategoryId,
+
+    [Required]
+    [MaxLength(150)]
+    string ProductName,
+
+    [MaxLength(500)]
+    string? Description,
+
+    [MaxLength(500)]
+    [Url]
+    string? ImageUrl,
+
+    bool IsActive
+);
+
 public sealed record UpdateProductRequest(
     int BrandId,
     int CategoryId,

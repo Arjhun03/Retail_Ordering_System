@@ -17,6 +17,26 @@ export interface UserSummary {
   fullName: string;
   email: string;
   role: UserRole;
+  brandId?: number | null;
+  brandName?: string | null;
+}
+
+export interface CreateBrandManagerRequest {
+  fullName: string;
+  email: string;
+  phone?: string | null;
+  password: string;
+  brandId: number;
+}
+
+export interface BrandManagerResponse {
+  userId: number;
+  fullName: string;
+  email: string;
+  phone: string | null;
+  brandId: number | null;
+  brandName: string | null;
+  createdAtUtc: string;
 }
 
 export interface AuthResponse {

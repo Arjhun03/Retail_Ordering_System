@@ -3,6 +3,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { AuthService } from '../../../core/auth/auth.service';
 import { CatalogService } from '../services/catalog.service';
 import {
   BrandResponse,
@@ -22,6 +23,7 @@ import {
 })
 export class ProductsComponent implements OnInit {
   private readonly catalogService = inject(CatalogService);
+  readonly authService = inject(AuthService);
 
   products = signal<ProductListItemResponse[]>([]);
   brands = signal<BrandResponse[]>([]);
@@ -78,6 +80,23 @@ export class ProductsComponent implements OnInit {
       categoryId: this.selectedCategoryId ?? undefined
     };
 
+    if (this.authService.isBrandManager()) {
+      this.catalogService.getMyBrandProducts(filters).subscribe({
+        next: (response) => {
+          this.products.set(response.items);
+          this.currentPage = response.page;
+          this.totalPages = response.totalPages;
+          this.totalCount = response.totalCount;
+          this.loading.set(false);
+        },
+        error: () => {
+          this.errorMessage.set('Unable to load your brand products. Please try again.');
+          this.loading.set(false);
+        }
+      });
+      return;
+    }
+
     this.catalogService.getProducts(filters).subscribe({
       next: (response) => {
         this.products.set(response.items);
@@ -101,8 +120,54 @@ export class ProductsComponent implements OnInit {
       return;
     }
 
-    if (!this.brandId || !this.categoryId) {
-      this.errorMessage.set('Please select a brand and category.');
+    if (!this.categoryId) {
+      this.errorMessage.set('Please select a category.');
+      return;
+    }
+
+    this.saving.set(true);
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    if (this.authService.isBrandManager()) {
+      if (this.editingId !== null) {
+        this.catalogService.updateMyBrandProduct(this.editingId, {
+          categoryId: this.categoryId,
+          productName: name,
+          description: this.description.trim() || null,
+          imageUrl: this.imageUrl.trim() || null,
+          isActive: true
+        }).subscribe({
+          next: () => {
+            this.successMessage.set('Product updated successfully.');
+            this.resetForm();
+            this.loadProducts();
+            this.saving.set(false);
+          },
+          error: (error) => this.handleError(error)
+        });
+      } else {
+        this.catalogService.createMyBrandProduct({
+          categoryId: this.categoryId,
+          productName: name,
+          description: this.description.trim() || null,
+          imageUrl: this.imageUrl.trim() || null
+        }).subscribe({
+          next: () => {
+            this.successMessage.set('Product added to your brand successfully.');
+            this.resetForm();
+            this.loadProducts();
+            this.saving.set(false);
+          },
+          error: (error) => this.handleError(error)
+        });
+      }
+      return;
+    }
+
+    if (!this.brandId) {
+      this.errorMessage.set('Please select a brand.');
+      this.saving.set(false);
       return;
     }
 
@@ -113,10 +178,6 @@ export class ProductsComponent implements OnInit {
       description: this.description.trim() || null,
       imageUrl: this.imageUrl.trim() || null
     };
-
-    this.saving.set(true);
-    this.errorMessage.set('');
-    this.successMessage.set('');
 
     if (this.editingId !== null) {
       const updateRequest: UpdateProductRequest = {
