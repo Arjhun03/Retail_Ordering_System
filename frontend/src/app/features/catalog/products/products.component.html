@@ -1,0 +1,217 @@
+
+<div class="products-page">
+
+  <div class="page-header">
+    <div>
+      <h1>Product Management</h1>
+      <p>View, create and manage products.</p>
+    </div>
+    <span class="total-count">{{ totalCount }} Products</span>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert success">{{ successMessage() }}</div>
+  }
+
+  <section class="form-card">
+    <h2>{{ editingId !== null ? 'Edit Product' : 'Add New Product' }}</h2>
+
+    <form (ngSubmit)="saveProduct()">
+
+      <div class="form-group">
+        <label for="productName">Product Name *</label>
+        <input
+          id="productName"
+          name="productName"
+          type="text"
+          [(ngModel)]="productName"
+          maxlength="150"
+          placeholder="Enter product name"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="brand">Brand *</label>
+        <select id="brand" name="brand" [(ngModel)]="brandId" required>
+          <option [ngValue]="null">Select Brand</option>
+          @for (brand of brands(); track brand.brandId) {
+            <option [ngValue]="brand.brandId">{{ brand.brandName }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category *</label>
+        <select id="category" name="category" [(ngModel)]="categoryId" required>
+          <option [ngValue]="null">Select Category</option>
+          @for (category of categories(); track category.categoryId) {
+            <option [ngValue]="category.categoryId">
+              {{ category.categoryName }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          [(ngModel)]="description"
+          rows="3"
+          placeholder="Enter product description"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="imageUrl">Image URL</label>
+        <input
+          id="imageUrl"
+          name="imageUrl"
+          type="url"
+          [(ngModel)]="imageUrl"
+          placeholder="Enter product image URL"
+        />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="saving()">
+          {{ saving() ? 'Saving...' : editingId !== null ? 'Update Product' : 'Add Product' }}
+        </button>
+
+        @if (editingId !== null) {
+          <button type="button" class="cancel-btn" (click)="resetForm()">
+            Cancel
+          </button>
+        }
+      </div>
+
+    </form>
+  </section>
+
+  <section class="filter-card">
+    <h2>Search and Filter Products</h2>
+
+    <div class="filters">
+      <input
+        type="text"
+        name="search"
+        [(ngModel)]="search"
+        placeholder="Search product name..."
+        (keyup.enter)="searchProducts()"
+      />
+
+      <select name="filterBrand" [(ngModel)]="selectedBrandId">
+        <option [ngValue]="null">All Brands</option>
+        @for (brand of brands(); track brand.brandId) {
+          <option [ngValue]="brand.brandId">{{ brand.brandName }}</option>
+        }
+      </select>
+
+      <select name="filterCategory" [(ngModel)]="selectedCategoryId">
+        <option [ngValue]="null">All Categories</option>
+        @for (category of categories(); track category.categoryId) {
+          <option [ngValue]="category.categoryId">
+            {{ category.categoryName }}
+          </option>
+        }
+      </select>
+
+      <button type="button" (click)="searchProducts()">Search</button>
+      <button type="button" class="clear-btn" (click)="clearFilters()">Clear</button>
+    </div>
+  </section>
+
+  <section class="table-card">
+    <h2>Products List</h2>
+
+    @if (loading()) {
+      <p class="loading">Loading products...</p>
+    } @else if (products().length === 0) {
+      <p class="empty">No products found.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Product Name</th>
+              <th>Brand</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (product of products(); track product.productId) {
+              <tr>
+                <td>{{ product.productId }}</td>
+                <td>{{ product.productName }}</td>
+                <td>{{ product.brandName }}</td>
+                <td>{{ product.categoryName }}</td>
+                <td>{{ product.description || '-' }}</td>
+                <td>
+                  <span
+                    [class.active]="product.isActive"
+                    [class.inactive]="!product.isActive"
+                  >
+                    {{ product.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="actions">
+                  <button
+                    type="button"
+                    class="edit-btn"
+                    (click)="editProduct(product)"
+                  >
+                    Edit
+                  </button>
+
+                  @if (product.isActive) {
+                    <button
+                      type="button"
+                      class="delete-btn"
+                      (click)="deleteProduct(product)"
+                    >
+                      Deactivate
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button
+          type="button"
+          (click)="changePage(currentPage - 1)"
+          [disabled]="currentPage === 1"
+        >
+          Previous
+        </button>
+
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+        <button
+          type="button"
+          (click)="changePage(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+        >
+          Next
+        </button>
+      </div>
+    }
+  </section>
+
+</div>
