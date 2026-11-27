@@ -1,0 +1,87 @@
+<main class="auth-shell">
+  <section class="auth-card" aria-labelledby="login-heading">
+    <p class="brand-eyebrow">Fresh Market</p>
+    <h1 id="login-heading" class="card-title">Sign in</h1>
+    <p class="card-subtitle">Access your orders and saved profile details.</p>
+
+    @if (showCreatedNotice()) {
+      <div class="banner banner-success" role="status" aria-live="polite">
+        <span>Account created, please sign in</span>
+        <button
+          type="button"
+          class="banner-dismiss"
+          (click)="dismissNotice()"
+          aria-label="Dismiss account created notice"
+        >
+          Dismiss
+        </button>
+      </div>
+    }
+
+    @if (formError(); as errorMessage) {
+      <div class="banner banner-error" role="alert" aria-live="polite">
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    <form class="form-stack" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="field">
+        <label class="field-label" for="login-email">Email</label>
+        <input
+          id="login-email"
+          type="email"
+          class="field-input"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          [attr.aria-invalid]="shouldShowError('email')"
+          [attr.aria-describedby]="shouldShowError('email') ? 'login-email-error' : null"
+        />
+        @if (getFieldError('email'); as emailError) {
+          <p id="login-email-error" class="field-error" aria-live="polite">{{ emailError }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="login-password">Password</label>
+        <div class="input-wrap">
+          <input
+            id="login-password"
+            [type]="showPassword() ? 'text' : 'password'"
+            class="field-input"
+            formControlName="password"
+            autocomplete="current-password"
+            [attr.aria-invalid]="shouldShowError('password')"
+            [attr.aria-describedby]="shouldShowError('password') ? 'login-password-error' : null"
+          />
+          <button
+            type="button"
+            class="toggle-btn"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-pressed]="showPassword()"
+            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+          >
+            {{ showPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        @if (getFieldError('password'); as passwordError) {
+          <p id="login-password-error" class="field-error" aria-live="polite">{{ passwordError }}</p>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          <span class="spinner" aria-hidden="true"></span>
+          <span>Signing in...</span>
+        } @else {
+          <span>Sign in</span>
+        }
+      </button>
+    </form>
+
+    <p class="card-footer">
+      New here?
+      <a class="text-link" routerLink="/register">Create an account</a>
+    </p>
+  </section>
+</main>

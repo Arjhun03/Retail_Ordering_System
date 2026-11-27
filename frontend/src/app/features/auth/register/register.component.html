@@ -1,0 +1,132 @@
+<main class="auth-shell">
+  <section class="auth-card" aria-labelledby="register-heading">
+    <p class="brand-eyebrow">Fresh Market</p>
+    <h1 id="register-heading" class="card-title">Create account</h1>
+    <p class="card-subtitle">Start ordering fresh groceries in a few moments.</p>
+
+    @if (formError(); as errorMessage) {
+      <div class="banner banner-error" role="alert" aria-live="polite">
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    <form class="form-stack" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="field">
+        <label class="field-label" for="register-full-name">Full name</label>
+        <input
+          id="register-full-name"
+          type="text"
+          class="field-input"
+          formControlName="fullName"
+          autocomplete="name"
+          [attr.aria-invalid]="shouldShowError('fullName')"
+          [attr.aria-describedby]="shouldShowError('fullName') ? 'register-full-name-error' : null"
+        />
+        @if (getFieldError('fullName'); as fullNameError) {
+          <p id="register-full-name-error" class="field-error" aria-live="polite">
+            {{ fullNameError }}
+          </p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="register-email">Email</label>
+        <input
+          id="register-email"
+          type="email"
+          class="field-input"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          [attr.aria-invalid]="shouldShowError('email')"
+          [attr.aria-describedby]="shouldShowError('email') ? 'register-email-error' : null"
+        />
+        @if (getFieldError('email'); as emailError) {
+          <p id="register-email-error" class="field-error" aria-live="polite">{{ emailError }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="register-phone">
+          Phone <span class="optional-tag">(optional)</span>
+        </label>
+        <input
+          id="register-phone"
+          type="tel"
+          class="field-input"
+          formControlName="phone"
+          autocomplete="tel"
+          inputmode="tel"
+          [attr.aria-invalid]="shouldShowError('phone')"
+          [attr.aria-describedby]="shouldShowError('phone') ? 'register-phone-error' : null"
+        />
+        @if (getFieldError('phone'); as phoneError) {
+          <p id="register-phone-error" class="field-error" aria-live="polite">{{ phoneError }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="register-password">Password</label>
+        <div class="input-wrap">
+          <input
+            id="register-password"
+            [type]="showPassword() ? 'text' : 'password'"
+            class="field-input"
+            formControlName="password"
+            autocomplete="new-password"
+            [attr.aria-invalid]="shouldShowError('password')"
+            [attr.aria-describedby]="shouldShowError('password') ? 'register-password-error' : null"
+          />
+          <button
+            type="button"
+            class="toggle-btn"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-pressed]="showPassword()"
+            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+          >
+            {{ showPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        @if (getFieldError('password'); as passwordError) {
+          <p id="register-password-error" class="field-error" aria-live="polite">
+            {{ passwordError }}
+          </p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="register-confirm-password">Confirm password</label>
+        <input
+          id="register-confirm-password"
+          [type]="showPassword() ? 'text' : 'password'"
+          class="field-input"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+          [attr.aria-invalid]="shouldShowError('confirmPassword')"
+          [attr.aria-describedby]="
+            shouldShowError('confirmPassword') ? 'register-confirm-password-error' : null
+          "
+        />
+        @if (getFieldError('confirmPassword'); as confirmError) {
+          <p id="register-confirm-password-error" class="field-error" aria-live="polite">
+            {{ confirmError }}
+          </p>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          <span class="spinner" aria-hidden="true"></span>
+          <span>Creating account...</span>
+        } @else {
+          <span>Create account</span>
+        }
+      </button>
+    </form>
+
+    <p class="card-footer">
+      Already have an account?
+      <a class="text-link" routerLink="/login">Sign in</a>
+    </p>
+  </section>
+</main>
