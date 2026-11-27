@@ -1,10 +1,10 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Retail_Ordering_system.DTOs;
-using Retail_Ordering_system.Interfaces.Services;
+using Retail_Ordering.Api.DTOs;
+using Retail_Ordering.Api.Interfaces.Services;
 
-namespace Retail_Ordering_system.Controllers;
+namespace Retail_Ordering.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

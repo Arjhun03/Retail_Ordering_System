@@ -2,6 +2,7 @@
 **/bin/
 **/obj/
 artifacts/
+Retail_Ordering_system/
 
 # NuGet packages
 *.nupkg

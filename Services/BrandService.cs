@@ -1,10 +1,10 @@
 
-using Retail_Ordering_system.DTOs;
-using Retail_Ordering_system.Interfaces.Repositories;
-using Retail_Ordering_system.Interfaces.Services;
-using Retail_Ordering_system.Models;
+using Retail_Ordering.Api.DTOs;
+using Retail_Ordering.Api.Interfaces.Repositories;
+using Retail_Ordering.Api.Interfaces.Services;
+using Retail_Ordering.Api.Models;
 
-namespace Retail_Ordering_system.Services;
+namespace Retail_Ordering.Api.Services;
 
 public class BrandService : IBrandService
 {

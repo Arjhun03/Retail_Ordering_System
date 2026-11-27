@@ -1,7 +1,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Retail_Ordering_system.DTOs;
+namespace Retail_Ordering.Api.DTOs;
 
 public sealed record CreateProductRequest(
     int BrandId,

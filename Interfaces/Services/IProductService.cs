@@ -1,7 +1,7 @@
 
-using Retail_Ordering_system.DTOs;
+using Retail_Ordering.Api.DTOs;
 
-namespace Retail_Ordering_system.Interfaces.Services;
+namespace Retail_Ordering.Api.Interfaces.Services;
 
 public interface IProductService
 {

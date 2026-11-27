@@ -1,10 +1,10 @@
 
 using Microsoft.EntityFrameworkCore;
-using Retail_Ordering_system.Data;
-using Retail_Ordering_system.Interfaces.Repositories;
-using Retail_Ordering_system.Models;
+using Retail_Ordering.Api.Data;
+using Retail_Ordering.Api.Interfaces.Repositories;
+using Retail_Ordering.Api.Models;
 
-namespace Retail_Ordering_system.Repositories;
+namespace Retail_Ordering.Api.Repositories;
 
 public class BrandRepository : IBrandRepository
 {

@@ -1,4 +1,4 @@
-using Retail_Ordering_system.Models;
+using Retail_Ordering.Api.Models;
 
 namespace Retail_Ordering.Api.Interfaces.Repositories;
 

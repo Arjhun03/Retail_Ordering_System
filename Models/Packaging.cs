@@ -1,3 +1,5 @@
+using Retail_Ordering.Api.Enums;
+
 namespace Retail_Ordering.Api.Models;
 
 public class Packaging

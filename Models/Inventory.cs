@@ -1,4 +1,4 @@
-namespace Retail_Ordering_system.Models;
+namespace Retail_Ordering.Api.Models;
 
 public class Inventory
 {

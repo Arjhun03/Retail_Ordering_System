@@ -1,3 +1,4 @@
+using Retail_Ordering.Api;
 namespace Retail_Ordering.Api.Models;
 
 public class Cart

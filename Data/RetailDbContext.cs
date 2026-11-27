@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Retail_Ordering.Api;
 using Retail_Ordering.Api.Enums;
-using Retail_Ordering_system.Models;
+using Retail_Ordering.Api.Models;
 
-namespace Retail_Ordering_system.Data;
+namespace Retail_Ordering.Api.Data;
 
 public class RetailDbContext(DbContextOptions<RetailDbContext> options) : DbContext(options)
 {

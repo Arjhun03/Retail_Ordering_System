@@ -9,11 +9,11 @@ using Retail_Ordering.Api.Interfaces.Services;
 using Retail_Ordering.Api.Middleware;
 using Retail_Ordering.Api.Repositories;
 using Retail_Ordering.Api.Services;
-using Retail_Ordering_system.Data;
-using Retail_Ordering_system.Interfaces.Repositories;
-using Retail_Ordering_system.Interfaces.Services;
-using Retail_Ordering_system.Repositories;
-using Retail_Ordering_system.Services;
+using Retail_Ordering.Api.Data;
+using Retail_Ordering.Api.Interfaces.Repositories;
+using Retail_Ordering.Api.Interfaces.Services;
+using Retail_Ordering.Api.Repositories;
+using Retail_Ordering.Api.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
