@@ -1,125 +1,107 @@
-RetailOrderingSystem (Solution)
+Retail_Ordering_System/
 │
-└── RetailOrdering.Api
+└── Retail_Ordering.Api/
     │
-    ├── Connected Services
-    ├── Dependencies
-    ├── Properties
-    │
-    ├── Controllers
+    ├── Controllers/
     │   ├── AuthController.cs
     │   ├── UsersController.cs
-    │   ├── ProductsController.cs
-    │   ├── CategoriesController.cs
     │   ├── BrandsController.cs
+    │   ├── CategoriesController.cs
+    │   ├── ProductsController.cs
     │   ├── PackagingController.cs
     │   ├── CartController.cs
     │   ├── OrdersController.cs
-    │   ├── PaymentsController.cs
-    │   ├── InventoryController.cs
-    │   └── DashboardController.cs
+    │   └── InventoryController.cs
     │
-    ├── Data
+    ├── Data/
     │   ├── RetailDbContext.cs
     │   └── DbSeeder.cs
     │
-    ├── DTOs
+    ├── DTOs/
     │   ├── AuthDtos.cs
     │   ├── UserDtos.cs
-    │   ├── ProductDtos.cs
-    │   ├── CategoryDtos.cs
     │   ├── BrandDtos.cs
+    │   ├── CategoryDtos.cs
+    │   ├── ProductDtos.cs
     │   ├── PackagingDtos.cs
     │   ├── CartDtos.cs
     │   ├── OrderDtos.cs
-    │   ├── PaymentDtos.cs
     │   ├── InventoryDtos.cs
-    │   ├── DashboardDtos.cs
     │   └── CommonDtos.cs
     │
-    ├── Enums
+    ├── Enums/
     │   ├── UserRole.cs
-    │   ├── ProductStatus.cs
+    │   ├── CartStatus.cs
     │   ├── OrderStatus.cs
-    │   ├── PaymentStatus.cs
-    │   └── PaymentMethod.cs
+    │   └── ProductStatus.cs
     │
-    ├── Helpers
+    ├── Helpers/
     │   ├── JwtHelper.cs
     │   ├── PasswordHelper.cs
-    │   ├── OrderNumberHelper.cs
-    │   └── QueryHelpers.cs
+    │   └── OrderNumberHelper.cs
     │
-    ├── Interfaces
-    │   │
-    │   ├── Repositories
+    ├── Interfaces/
+    │   ├── Repositories/
     │   │   ├── IUserRepository.cs
-    │   │   ├── IProductRepository.cs
-    │   │   ├── ICategoryRepository.cs
     │   │   ├── IBrandRepository.cs
+    │   │   ├── ICategoryRepository.cs
+    │   │   ├── IProductRepository.cs
     │   │   ├── IPackagingRepository.cs
     │   │   ├── ICartRepository.cs
     │   │   ├── IOrderRepository.cs
-    │   │   ├── IPaymentRepository.cs
     │   │   └── IInventoryRepository.cs
     │   │
-    │   └── Services
+    │   └── Services/
     │       ├── IAuthService.cs
     │       ├── IUserService.cs
-    │       ├── IProductService.cs
-    │       ├── ICategoryService.cs
     │       ├── IBrandService.cs
+    │       ├── ICategoryService.cs
+    │       ├── IProductService.cs
     │       ├── IPackagingService.cs
     │       ├── ICartService.cs
     │       ├── IOrderService.cs
-    │       ├── IPaymentService.cs
-    │       ├── IInventoryService.cs
-    │       └── IDashboardService.cs
+    │       └── IInventoryService.cs
     │
-    ├── Middleware
+    ├── Middleware/
     │   ├── GlobalExceptionHandler.cs
     │   └── RequestLoggingMiddleware.cs
     │
-    ├── Migrations
+    ├── Migrations/
     │
-    ├── Models
+    ├── Models/
     │   ├── User.cs
-    │   ├── Product.cs
-    │   ├── Category.cs
     │   ├── Brand.cs
+    │   ├── Category.cs
+    │   ├── Product.cs
     │   ├── Packaging.cs
     │   ├── Cart.cs
     │   ├── CartItem.cs
     │   ├── Order.cs
     │   ├── OrderItem.cs
-    │   ├── Payment.cs
     │   └── Inventory.cs
     │
-    ├── Repositories
+    ├── Repositories/
     │   ├── UserRepository.cs
-    │   ├── ProductRepository.cs
-    │   ├── CategoryRepository.cs
     │   ├── BrandRepository.cs
+    │   ├── CategoryRepository.cs
+    │   ├── ProductRepository.cs
     │   ├── PackagingRepository.cs
     │   ├── CartRepository.cs
     │   ├── OrderRepository.cs
-    │   ├── PaymentRepository.cs
     │   └── InventoryRepository.cs
     │
-    ├── Services
+    ├── Services/
     │   ├── AuthService.cs
     │   ├── UserService.cs
-    │   ├── ProductService.cs
-    │   ├── CategoryService.cs
     │   ├── BrandService.cs
+    │   ├── CategoryService.cs
+    │   ├── ProductService.cs
     │   ├── PackagingService.cs
     │   ├── CartService.cs
     │   ├── OrderService.cs
-    │   ├── PaymentService.cs
-    │   ├── InventoryService.cs
-    │   └── DashboardService.cs
+    │   └── InventoryService.cs
     │
+    ├── Properties/
     ├── appsettings.json
-    ├── appsettings.Development.json
     ├── Program.cs
-    └── RetailOrdering.Api.csproj
+    └── Retail_Ordering.Api.csproj
