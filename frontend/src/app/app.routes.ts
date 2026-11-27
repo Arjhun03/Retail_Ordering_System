@@ -10,5 +10,12 @@ export const routes: Routes = [
     path: 'profile',
     loadChildren: () => import('./features/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
   },
+  {
+    path: 'catalog',
+    loadChildren: () =>
+      import('./features/catalog/catalog.routes').then(
+        (m) => m.CATALOG_ROUTES
+      ),
+  },
   { path: '**', redirectTo: 'login' },
 ];

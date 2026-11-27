@@ -1,0 +1,110 @@
+
+<div class="brands-page">
+  <div class="page-header">
+    <div>
+      <h1>Brand Management</h1>
+      <p>Create and manage product brands.</p>
+    </div>
+    <span class="total-count">{{ brands().length }} Brands</span>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert success">{{ successMessage() }}</div>
+  }
+
+  <section class="form-card">
+    <h2>{{ editingId !== null ? 'Edit Brand' : 'Add New Brand' }}</h2>
+
+    <form (ngSubmit)="saveBrand()">
+      <div class="form-group">
+        <label for="brandName">Brand Name *</label>
+        <input
+          id="brandName"
+          name="brandName"
+          type="text"
+          [(ngModel)]="brandName"
+          maxlength="100"
+          placeholder="Enter brand name"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          [(ngModel)]="description"
+          maxlength="500"
+          rows="3"
+          placeholder="Enter brand description"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="saving()">
+          {{ saving() ? 'Saving...' : editingId !== null ? 'Update Brand' : 'Add Brand' }}
+        </button>
+
+        @if (editingId !== null) {
+          <button type="button" class="cancel-btn" (click)="resetForm()">
+            Cancel
+          </button>
+        }
+      </div>
+    </form>
+  </section>
+
+  <section class="table-card">
+    <h2>Brands List</h2>
+
+    @if (loading()) {
+      <p class="loading">Loading brands...</p>
+    } @else if (brands().length === 0) {
+      <p class="empty">No brands found.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Brand Name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (brand of brands(); track brand.brandId) {
+              <tr>
+                <td>{{ brand.brandId }}</td>
+                <td>{{ brand.brandName }}</td>
+                <td>{{ brand.description || '-' }}</td>
+                <td>
+                  <span [class.active]="brand.isActive" [class.inactive]="!brand.isActive">
+                    {{ brand.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="actions">
+                  <button type="button" class="edit-btn" (click)="editBrand(brand)">
+                    Edit
+                  </button>
+                  @if (brand.isActive) {
+                    <button type="button" class="delete-btn" (click)="deleteBrand(brand)">
+                      Deactivate
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

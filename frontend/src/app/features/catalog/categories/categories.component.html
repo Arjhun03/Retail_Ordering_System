@@ -1,0 +1,122 @@
+
+<div class="categories-page">
+  <div class="page-header">
+    <div>
+      <h1>Category Management</h1>
+      <p>Create and manage product categories.</p>
+    </div>
+    <span class="total-count">{{ categories().length }} Categories</span>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert success">{{ successMessage() }}</div>
+  }
+
+  <section class="form-card">
+    <h2>{{ editingId !== null ? 'Edit Category' : 'Add New Category' }}</h2>
+
+    <form (ngSubmit)="saveCategory()">
+      <div class="form-group">
+        <label for="categoryName">Category Name *</label>
+        <input
+          id="categoryName"
+          name="categoryName"
+          type="text"
+          [(ngModel)]="categoryName"
+          maxlength="100"
+          placeholder="Enter category name"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          [(ngModel)]="description"
+          maxlength="500"
+          rows="3"
+          placeholder="Enter category description"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="saving()">
+          {{ saving() ? 'Saving...' : editingId !== null ? 'Update Category' : 'Add Category' }}
+        </button>
+
+        @if (editingId !== null) {
+          <button type="button" class="cancel-btn" (click)="resetForm()">
+            Cancel
+          </button>
+        }
+      </div>
+    </form>
+  </section>
+
+  <section class="table-card">
+    <h2>Categories List</h2>
+
+    @if (loading()) {
+      <p class="loading">Loading categories...</p>
+    } @else if (categories().length === 0) {
+      <p class="empty">No categories found.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Category Name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (category of categories(); track category.categoryId) {
+              <tr>
+                <td>{{ category.categoryId }}</td>
+                <td>{{ category.categoryName }}</td>
+                <td>{{ category.description || '-' }}</td>
+                <td>
+                  <span
+                    [class.active]="category.isActive"
+                    [class.inactive]="!category.isActive"
+                  >
+                    {{ category.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="actions">
+                  <button
+                    type="button"
+                    class="edit-btn"
+                    (click)="editCategory(category)"
+                  >
+                    Edit
+                  </button>
+
+                  @if (category.isActive) {
+                    <button
+                      type="button"
+                      class="delete-btn"
+                      (click)="deleteCategory(category)"
+                    >
+                      Deactivate
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>
