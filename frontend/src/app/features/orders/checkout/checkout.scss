@@ -1,0 +1,95 @@
+.checkout-container {
+  max-width: 750px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.checkout-card {
+  padding: 30px;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.checkout-card h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.subtitle {
+  color: #777;
+  margin-bottom: 30px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #222;
+}
+
+.form-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.form-group textarea:focus {
+  border-color: #333;
+}
+
+.form-group small {
+  color: #777;
+  text-align: right;
+}
+
+.checkout-card button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 25px;
+  border: none;
+  border-radius: 8px;
+  background: #222;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.checkout-card button:hover:not(:disabled) {
+  background: #444;
+}
+
+.checkout-card button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #b42318;
+  background: #fef3f2;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .checkout-container {
+    padding: 12px;
+    margin: 20px auto;
+  }
+
+  .checkout-card {
+    padding: 20px;
+  }
+}

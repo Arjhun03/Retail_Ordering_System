@@ -1,0 +1,74 @@
+<section class="order-details-container">
+  <button type="button" class="back-button" (click)="backToOrders()">
+    ← Back to My Orders
+  </button>
+
+  <p *ngIf="loading" class="loading">
+    Loading order details...
+  </p>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="order && !loading" class="order-content">
+    <header class="order-header">
+      <div>
+        <h1>Order Details</h1>
+        <p class="order-number">{{ order.orderNumber }}</p>
+      </div>
+
+      <span class="status" [ngClass]="order.status.toLowerCase()">
+        {{ order.status }}
+      </span>
+    </header>
+
+    <section class="order-information">
+      <div class="info-card">
+        <span class="label">Order Date</span>
+        <p>{{ order.orderedAtUtc | date:'medium' }}</p>
+      </div>
+
+      <div class="info-card">
+        <span class="label">Order ID</span>
+        <p>{{ order.orderId }}</p>
+      </div>
+
+      <div class="info-card">
+        <span class="label">Delivery Address</span>
+        <p class="address">{{ order.deliveryAddress }}</p>
+      </div>
+    </section>
+
+    <section class="items-section">
+      <h2>Ordered Items</h2>
+
+      <article class="order-item" *ngFor="let item of order.items">
+        <div class="item-info">
+          <h3>{{ item.productName }}</h3>
+          <p>{{ item.packagingName }}</p>
+        </div>
+
+        <div class="item-quantity">
+          <span class="label">Quantity</span>
+          <strong>{{ item.quantity }}</strong>
+        </div>
+
+        <div class="item-price">
+          <span class="label">Unit Price</span>
+          <strong>₹{{ item.unitPrice | number:'1.2-2' }}</strong>
+        </div>
+
+        <div class="item-subtotal">
+          <span class="label">Subtotal</span>
+          <strong>₹{{ item.subtotal | number:'1.2-2' }}</strong>
+        </div>
+      </article>
+    </section>
+
+    <section class="total-section">
+      <span>Total Amount</span>
+      <strong>₹{{ order.totalAmount | number:'1.2-2' }}</strong>
+    </section>
+  </div>
+</section>

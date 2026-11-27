@@ -1,0 +1,63 @@
+<section class="orders-container">
+  <header class="orders-header">
+    <h1>My Orders</h1>
+    <p>Track and review your previous purchases.</p>
+  </header>
+
+  <div *ngIf="loading" class="message">
+    Loading orders...
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!loading && orders.length === 0 && !errorMessage" class="empty">
+    <h2>No orders yet</h2>
+    <p>Your orders will appear here once you purchase products.</p>
+  </div>
+
+  <div class="orders-list" *ngIf="!loading && orders.length > 0">
+    <article class="order-card" *ngFor="let order of orders">
+      <div class="order-info">
+        <div>
+          <span class="label">Order Number</span>
+          <h3>{{ order.orderNumber }}</h3>
+        </div>
+
+        <div>
+          <span class="label">Order Date</span>
+          <p>{{ order.orderedAtUtc | date:'medium' }}</p>
+        </div>
+
+        <div>
+          <span class="label">Total Amount</span>
+          <strong>₹{{ order.totalAmount | number:'1.2-2' }}</strong>
+        </div>
+
+        <div>
+          <span class="label">Status</span>
+          <span class="status" [ngClass]="order.status.toLowerCase()">
+            {{ order.status }}
+          </span>
+        </div>
+      </div>
+
+      <button type="button" (click)="viewOrder(order.orderId)">
+        View Details
+      </button>
+    </article>
+  </div>
+
+  <div class="pagination" *ngIf="!loading && orders.length > 0">
+    <button (click)="previousPage()" [disabled]="page <= 1">
+      Previous
+    </button>
+
+    <span>Page {{ page }} of {{ totalPages }}</span>
+
+    <button (click)="nextPage()" [disabled]="page >= totalPages">
+      Next
+    </button>
+  </div>
+</section>
